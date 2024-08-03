@@ -7,10 +7,11 @@ import {
     point,
     text,
     timestamp,
-    varchar
+    varchar,
 } from 'drizzle-orm/pg-core';
 import {createId} from "@paralleldrive/cuid2";
 import {relations} from "drizzle-orm";
+import {polygonDB} from "@/database/customTypes";
 
 // AssetType Table
 export const assetTypeTable = pgTable('assetTypes', {
@@ -42,7 +43,8 @@ export const assetTable = pgTable('assets', {
 export const organizationTable = pgTable('organizations', {
     organizationId: text('organizationId').primaryKey().$defaultFn(createId),
     name: varchar('name', { length: 255 }).notNull(),
-    border: text('border'),
+    // border: geometry('border', { type: 'polygon', srid: 4326}),
+    border: polygonDB('border'),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt').defaultNow(),
 }, (table) => ({

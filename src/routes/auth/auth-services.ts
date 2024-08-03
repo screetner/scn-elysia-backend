@@ -27,3 +27,10 @@ export async function findUser(body: LoginBodyType) {
         },
     })
 }
+
+/*
+*/
+export function accessTokenExpire(timeInSeconds : number) {
+    const currentDate = new Date();
+    return new Date(currentDate.getTime() + timeInSeconds * 1000);
+}

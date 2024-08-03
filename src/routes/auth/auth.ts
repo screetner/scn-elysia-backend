@@ -1,30 +1,17 @@
 import {Elysia} from "elysia";
 import {
+    accessTokenExpire,
     findUser
 } from "./auth-services"
 import {JWTPayload, LoginBody} from "@/models/auth/auth";
-import {jwt} from "@elysiajs/jwt";
+import {jwtAccessSetup} from "@/routes/auth/setup";
+import {CustomResponse} from "@/custom/Response";
 
 export const auth = (app: Elysia) =>
     app.group("auth", (app) => {
         return app
-            .use(jwt({
-                name: "jwt",
-                secret: process.env.JWT_SECRET || "secret"
-            }))
-            .get("/check/:name", async ({ jwt ,params}) => {
-                const value = await jwt.sign(params)
-                return {
-                    accessToken: value
-                }
-            },{
-                detail: {
-                    title: "Check",
-                    description: "Check the user",
-                    tags: ["Auth"]
-                }
-            })
-            .post("/login", async ({body, error, jwt}) => {
+            .use(jwtAccessSetup)
+            .post("/login", async ({body, error, jwtAccess}) => {
                 try{
                     const user = await findUser(body)
 
@@ -45,15 +32,18 @@ export const auth = (app: Elysia) =>
                         orgName : user.role.organization.name,
                     }
 
-                    return {
-                        user : {
-                            accessToken: await jwt.sign(payload as unknown as Record<string ,string | number>),
+                    const result = {
+                        user: {
+                            accessToken: await jwtAccess.sign(payload),
                             username: payload.username,
                             email: payload.email,
                             roleName: payload.roleName,
                             orgName: payload.orgName,
+                            accessTokenExpiry : accessTokenExpire(86400)
                         }
-                    }
+                    };
+
+                    return CustomResponse.ok(result).toStandardResponse()
 
                 }catch (e){
                     return error(500,e)
