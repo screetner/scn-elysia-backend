@@ -1,19 +1,28 @@
 import {db} from "@/database/database";
-import {eq} from "drizzle-orm";
+import {eq, sql} from "drizzle-orm";
 import {PostGeoBodyType} from "@/models/geolocation/geolocation";
-import {organizationTable, userTable} from "@/database/schemas";
+import {PolygonType} from "@/database/customTypes"
+import {organizationTable} from "@/database/schemas";
 
 export async function postGeo(body: PostGeoBodyType, organizationId: string) {
-    const border = body;
+    const border: PolygonType = body;
 
-    return db.update(organizationTable)
-        .set({border})
-        .where(eq(organizationTable.organizationId, organizationId))
-        .returning({id :organizationTable.organizationId});
+    return await db.transaction(async (trx) => {
+        await trx.update(organizationTable)
+            .set({ border })
+            .where(eq(organizationTable.organizationId, organizationId))
+            .execute();
+
+        return trx.query.organizationTable.findFirst({
+            columns: {
+                organizationId: true,
+            },
+            where: eq(organizationTable.organizationId, organizationId),
+        });
+    });
 }
 
 export async function getGeo(organizationId: string) {
-
     return db.query.organizationTable.findFirst({
         columns: {
             border: true,

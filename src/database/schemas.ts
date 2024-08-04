@@ -1,21 +1,19 @@
 import {
     bigint,
     index,
-    jsonb,
-    pgEnum,
-    pgTable,
-    point,
-    text,
+    json,
+    mysqlEnum,
+    mysqlTable,
     timestamp,
     varchar,
-} from 'drizzle-orm/pg-core';
+} from 'drizzle-orm/mysql-core';
 import {createId} from "@paralleldrive/cuid2";
 import {relations} from "drizzle-orm";
-import {polygonDB} from "@/database/customTypes";
+import {pointDB, polygonDB} from "@/database/customTypes";
 
 // AssetType Table
-export const assetTypeTable = pgTable('assetTypes', {
-    assetTypeId: text('assetTypeId').primaryKey().$defaultFn(createId),
+export const assetTypeTable = mysqlTable('assetTypes', {
+    assetTypeId: varchar('assetTypeId', { length: 128 }).primaryKey().$defaultFn(createId),
     assetType: varchar('assetType', { length: 255 }).notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt').defaultNow(),
@@ -24,12 +22,12 @@ export const assetTypeTable = pgTable('assetTypes', {
 }));
 
 // Asset Table
-export const assetTable = pgTable('assets', {
-    assetId: text('assetId').primaryKey().$defaultFn(createId),
-    geoCoordinate: point('geoCoordinate').notNull(),
-    assetTypeId: text('assetTypeId').references(() => assetTypeTable.assetTypeId),
+export const assetTable = mysqlTable('assets', {
+    assetId: varchar('assetId', { length: 128 }).primaryKey().$defaultFn(createId),
+    geoCoordinate: pointDB('geoCoordinate').notNull(),
+    assetTypeId: varchar('assetTypeId', { length: 128 }).references(() => assetTypeTable.assetTypeId),
     imageFileLink: varchar('imageFileLink', { length: 255 }).notNull(),
-    recordedUser: text('recordedUser').references(() => userTable.userId),
+    recordedUser: varchar('recordedUser', { length: 128 }).references(() => userTable.userId),
     recordedAt: timestamp('recordedAt').notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt').defaultNow(),
@@ -40,10 +38,9 @@ export const assetTable = pgTable('assets', {
 
 
 // Organization Table
-export const organizationTable = pgTable('organizations', {
-    organizationId: text('organizationId').primaryKey().$defaultFn(createId),
+export const organizationTable = mysqlTable('organizations', {
+    organizationId: varchar('organizationId', { length: 128 }).primaryKey().$defaultFn(createId),
     name: varchar('name', { length: 255 }).notNull(),
-    // border: geometry('border', { type: 'polygon', srid: 4326}),
     border: polygonDB('border'),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt').defaultNow(),
@@ -53,11 +50,11 @@ export const organizationTable = pgTable('organizations', {
 }));
 
 // Role Table
-export const roleTable = pgTable('roles', {
-    roleId: text('roleId').primaryKey().$defaultFn(createId),
-    organizationId: text('organizationId').references(() => organizationTable.organizationId).notNull(),
+export const roleTable = mysqlTable('roles', {
+    roleId: varchar('roleId', { length: 128 }).primaryKey().$defaultFn(createId),
+    organizationId: varchar('organizationId', { length: 128 }).references(() => organizationTable.organizationId).notNull(),
     roleName: varchar('roleName', { length: 255 }).notNull(),
-    abilityScope: jsonb('abilityScope').notNull(),
+    abilityScope: json('abilityScope').notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt').defaultNow(),
 }, (table) => ({
@@ -66,9 +63,9 @@ export const roleTable = pgTable('roles', {
 }));
 
 // User Table
-export const userTable = pgTable('users', {
-    userId: text('userId').primaryKey().$defaultFn(createId),
-    roleId: text('roleId').references(() => roleTable.roleId).notNull(),
+export const userTable = mysqlTable('users', {
+    userId: varchar('userId', { length: 128 }).primaryKey().$defaultFn(createId),
+    roleId: varchar('roleId', { length: 128 }).references(() => roleTable.roleId).notNull(),
     username: varchar('username', { length: 50 }).notNull(),
     email: varchar('email', { length: 100 }).unique().notNull(),
     password: varchar('password', { length: 101 }).notNull(),
@@ -81,14 +78,12 @@ export const userTable = pgTable('users', {
 }));
 
 // VideoSession Table
-export const videoSessionStateEnum = pgEnum('video_session_state', ['uploading', 'uploaded', 'processing', 'processed', 'canDelete']);
-
-export const videoSessionTable = pgTable('videoSessions', {
-    videoSessionId: text('videoSessionId').primaryKey().$defaultFn(createId),
-    uploadUserId: text('uploadUserId').references(() => userTable.userId).notNull(),
+export const videoSessionTable = mysqlTable('videoSessions', {
+    videoSessionId: varchar('videoSessionId', { length: 128 }).primaryKey().$defaultFn(createId),
+    uploadUserId: varchar('uploadUserId', { length: 128 }).references(() => userTable.userId).notNull(),
     uploadProgress: bigint('uploadProgress', { mode: 'number' }),
     videoLink: varchar('videoLink', { length: 255 }),
-    state: videoSessionStateEnum('state'),
+    state: mysqlEnum('state', ['uploading', 'uploaded', 'processing', 'processed', 'canDelete']),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt').defaultNow(),
 });

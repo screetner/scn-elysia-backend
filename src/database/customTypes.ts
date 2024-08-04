@@ -1,36 +1,59 @@
-import {PostGeoBodyType} from "@/models/geolocation/geolocation";
-import {customType} from "drizzle-orm/pg-core";
-import * as wkx from "wkx";
-import {Buffer} from 'buffer';
+import {customType} from "drizzle-orm/mysql-core";
+import {SQL} from "drizzle-orm/sql/sql";
+import {sql} from "drizzle-orm";
 
 export const polygonDB = customType<
     {
-        data: PostGeoBodyType;
-        driverData: string;
+        data: PolygonType;
+        driverData: PolygonCoordinate;
     }
 >({
     dataType() {
-        return 'GEOMETRY(POLYGON, 4326)';
+        return 'POLYGON SRID 4326';
     },
-    toDriver(value: PostGeoBodyType): string {
+    toDriver(value: PolygonType): SQL {
         const points = value.map(point => `${point.longitude} ${point.latitude}`).join(', ');
-        return `SRID=4326;POLYGON((${points}, ${value[0].longitude} ${value[0].latitude}))`;
+        const wkt = `POLYGON((${points}, ${points.split(', ')[0]}))`;
+        return sql`ST_PolygonFromText(${wkt},4326)`;
     },
-    fromDriver: function (value: string): PostGeoBodyType {
-        // Parse the WKT string to a GeoJSON object
-        const wkbBuffer = Buffer.from(value, 'hex');
-        const geometry = wkx.Geometry.parse(wkbBuffer).toGeoJSON() as GeoJSONPolygon;
-
-        // Convert coordinates to longitude and latitude pairs
-        const coordinates = geometry.coordinates[0];
-        return coordinates.map((value) => {
-            const [longitude, latitude] = value as [number, number];
-            return {longitude, latitude};
-        })
+    fromDriver: function (value: PolygonCoordinate): PolygonType {
+        const polygon = value[0];
+        return polygon.map(({ x, y }) => ({ longitude: x, latitude: y }))
     },
 });
 
-interface GeoJSONPolygon {
-    type: string;
-    coordinates: [number, number][][]; // Coordinates for Polygon: array of rings, each ring is an array of points
+type PolygonCoordinate = {
+    x: number;
+    y: number;
+}[][];
+
+export const pointDB = customType<
+    {
+        data: PointType;
+        driverData: PointCoordinate;
+    }
+>({
+    dataType() {
+        return 'POINT SRID 4326';
+    },
+    toDriver(value: PointType): SQL {
+        const wkt = `POINT(${value.longitude} ${value.latitude})`;
+        return sql`ST_PointFromText(${wkt},4326)`;
+    },
+    fromDriver: function (value: PointCoordinate): PointType {
+        return { longitude: value.x, latitude: value.y };
+    },
+});
+
+type PointCoordinate = {
+    x: number;
+    y: number;
+};
+
+
+export type PointType = {
+    latitude: number;
+    longitude: number;
 }
+
+export type PolygonType = PointType[]

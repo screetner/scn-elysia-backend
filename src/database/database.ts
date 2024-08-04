@@ -1,8 +1,15 @@
-import { drizzle } from 'drizzle-orm/postgres-js'
-import * as schema from "@/database/schemas"
-import postgres from 'postgres'
+import { drizzle } from 'drizzle-orm/mysql2'
+import mysql from 'mysql2/promise';
+import * as schema from './schemas';
+import * as process from "node:process";
 
 
-const connectionString = process.env.DATABASE_URL
-export const client = postgres(connectionString ?? "")
-export const db = drizzle(client, {schema});
+export const client = await mysql.createConnection({
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    multipleStatements: true,
+});
+export const db = drizzle(client, { schema, mode: 'default' });
