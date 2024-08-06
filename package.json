@@ -11,7 +11,10 @@
     "@paralleldrive/cuid2": "^2.2.2",
     "drizzle-orm": "^0.32.1",
     "elysia": "latest",
+    "express-winston": "^4.2.0",
+    "logestic": "^1.2.3",
     "postgres": "^3.4.4",
+    "winston": "^3.13.1",
     "wkx": "^0.5.0"
   },
   "devDependencies": {

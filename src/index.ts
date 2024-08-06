@@ -2,8 +2,10 @@ import { Elysia } from "elysia";
 import { swagger } from '@elysiajs/swagger'
 import {auth, sample, geolocation} from "@/routes";
 import {jwt} from "@elysiajs/jwt";
+import { Logestic } from 'logestic';
 
 const app = new Elysia()
+    .use(Logestic.preset('common'))
     .get("/", () => "Hello Elysia")
     .use(auth)
     .use(geolocation)
