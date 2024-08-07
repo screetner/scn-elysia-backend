@@ -39,7 +39,7 @@ export const auth = (app: Elysia) =>
                             email: payload.email,
                             roleName: payload.roleName,
                             orgName: payload.orgName,
-                            accessTokenExpiry : accessTokenExpire(86400)
+                            accessTokenExpiry : accessTokenExpire(600)
                         }
                     };
 
