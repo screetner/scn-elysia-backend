@@ -1,12 +1,12 @@
 import {Elysia} from "elysia";
 import {PostGeoBody} from "@/models/geolocation/geolocation";
 import {postGeo, getGeo} from "@/routes/geolocation/geolocation-service";
-import {checkToken} from "@/middleware/jwtRequire";
+import {checkAccessToken} from "@/middleware/jwtRequire";
 
 export const geolocation = (app: Elysia) =>
     app.group("geolocation", (app) => {
         return app
-            .use(checkToken)
+            .use(checkAccessToken)
             .patch("/organization-border", async ({body, error, payload}) => {
                 try {
                     const response = await postGeo(body, payload!.orgId)
