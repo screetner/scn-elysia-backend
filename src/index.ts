@@ -3,7 +3,6 @@ import { swagger } from '@elysiajs/swagger'
 import {auth, sample, geolocation} from "@/routes";
 import {jwt} from "@elysiajs/jwt";
 import { Logestic } from 'logestic';
-import cors from "@elysiajs/cors";
 
 const app = new Elysia()
     .use(Logestic.preset('common'))
@@ -18,10 +17,6 @@ const app = new Elysia()
                 { name: 'Sample', description: 'Sample endpoints' }
             ]
         }
-    }))
-    .use(cors({
-        origin: "*",
-        methods: ["GET", "POST", "PATCH", "DELETE"],
     }))
     .use(auth)
     .use(geolocation)
