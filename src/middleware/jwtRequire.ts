@@ -5,20 +5,12 @@ import {jwtAccessSetup, jwtRefreshSetup} from "@/routes/auth/setup";
 const checkImproperToken = async (token: string | undefined, set, jwtVerifier) => {
     if (!token) {
         set.status = 401;
-        return {
-            success: false,
-            message: "Unauthorized",
-            data: null,
-        };
+        throw Error("Access token is missing");
     }
     const payload = await jwtVerifier.verify(token);
     if (!payload) {
-        set.status = 401;
-        return {
-            success: false,
-            message: "Unauthorized",
-            data: null,
-        };
+        set.status = 403;
+        throw Error("Access token is invalid");
     }
     return { payload };
 };

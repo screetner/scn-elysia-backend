@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 import { swagger } from '@elysiajs/swagger'
-import {auth, sample, geolocation} from "@/routes";
+import * as routes from "@/routes";
 import {jwt} from "@elysiajs/jwt";
 import { Logestic } from 'logestic';
 
@@ -15,11 +15,22 @@ const app = new Elysia()
             tags: [
                 { name: 'Auth', description: 'Authentication endpoints' },
                 { name: 'Sample', description: 'Sample endpoints' }
-            ]
+            ],
+            components: {
+                securitySchemes: {
+                    bearerAuth: {
+                        type: 'http',
+                        scheme: 'bearer',
+                        bearerFormat: 'JWT'
+                    }
+                }
+            },
+            security: [{ bearerAuth: [] }]
         }
     }))
-    .use(auth)
-    .use(geolocation)
-    .use(sample)
+    .use(routes.auth)
+    .use(routes.geolocation)
+    .use(routes.sample)
+    .use(routes.asset)
     .get("/", () => "Hello Elysia")
     .listen(3000);

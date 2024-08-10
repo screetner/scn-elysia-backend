@@ -1,5 +1,5 @@
 import {Elysia} from "elysia";
-import {PostGeoBody} from "@/models/geolocation/geolocation";
+import {PostGeoBody} from "@/models/geolocation";
 import {postGeo, getGeo} from "@/routes/geolocation/geolocation-service";
 import {checkAccessToken} from "@/middleware/jwtRequire";
 
@@ -28,6 +28,7 @@ export const geolocation = (app: Elysia) =>
             })
             .get("/", async ({error, payload}) => {
                 try {
+                    console.log(payload);
                     const response = await getGeo(payload!.orgId)
 
                     if (!response) return error(401, "Unauthorized")

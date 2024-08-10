@@ -1,6 +1,6 @@
 import {db} from "@/database/database";
 import {eq} from "drizzle-orm";
-import {PostGeoBodyType} from "@/models/geolocation/geolocation";
+import {PostGeoBodyType} from "@/models/geolocation";
 import {organizationTable, userTable} from "@/database/schemas";
 
 export async function postGeo(body: PostGeoBodyType, organizationId: string) {

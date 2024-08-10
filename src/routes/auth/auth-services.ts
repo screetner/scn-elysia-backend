@@ -1,7 +1,7 @@
 import {db} from "@/database/database";
 import {eq} from "drizzle-orm";
 import { userTable } from "@/database/schemas";
-import {LoginBodyType} from "@/models/auth/auth";
+import {LoginBodyType} from "@/models/auth";
 
 export async function findUser(body: LoginBodyType) {
     return db.query.userTable.findFirst({

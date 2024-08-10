@@ -3,7 +3,7 @@ import {
     accessTokenExpire,
     findUser
 } from "./auth-services"
-import {JWTPayload, LoginBody} from "@/models/auth/auth";
+import {JWTPayload, LoginBody} from "@/models/auth";
 import {jwtAccessSetup, jwtRefreshSetup} from "@/routes/auth/setup";
 import {CustomResponse} from "@/custom/Response";
 import {refreshToken} from "@/routes/auth/refreshToken";

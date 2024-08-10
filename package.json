@@ -10,7 +10,7 @@
     "@elysiajs/jwt": "^1.1.0",
     "@elysiajs/swagger": "^1.1.0",
     "@paralleldrive/cuid2": "^2.2.2",
-    "drizzle-orm": "^0.32.1",
+    "drizzle-orm": "^0.33.0",
     "elysia": "latest",
     "express-winston": "^4.2.0",
     "logestic": "^1.2.3",

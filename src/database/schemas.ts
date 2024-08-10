@@ -95,6 +95,10 @@ export const videoSessionTable = pgTable('videoSessions', {
 
 
 // Relations
+export const organizationRelations = relations(organizationTable, ({ many }) => ({
+    role: many(roleTable)
+}));
+
 export const rolesRelations = relations(roleTable, ({ one, many }) => ({
     organization: one(organizationTable, {
         fields: [roleTable.organizationId],
@@ -103,13 +107,25 @@ export const rolesRelations = relations(roleTable, ({ one, many }) => ({
     user: many(userTable)
 }));
 
-export const organizationRelations = relations(organizationTable, ({ many }) => ({
-    role: many(roleTable)
-}));
-
-export const userRelation = relations(userTable, ({ one }) => ({
+export const userRelation = relations(userTable, ({ one, many }) => ({
     role: one(roleTable, {
         fields: [userTable.roleId],
         references: [roleTable.roleId],
+    }),
+    asset: many(assetTable)
+}));
+
+export const assetTypeRelations = relations(assetTypeTable, ({ many }) => ({
+    asset: many(assetTable)
+}));
+
+export const assetRelations = relations(assetTable, ({ one }) => ({
+    assetType: one(assetTypeTable, {
+        fields: [assetTable.assetTypeId],
+        references: [assetTypeTable.assetTypeId],
+    }),
+    user: one(userTable, {
+        fields: [assetTable.recordedUser],
+        references: [userTable.userId],
     }),
 }));

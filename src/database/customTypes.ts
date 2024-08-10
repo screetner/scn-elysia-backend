@@ -1,4 +1,4 @@
-import {PostGeoBodyType} from "@/models/geolocation/geolocation";
+import {PostGeoBodyType} from "@/models/geolocation";
 import {customType} from "drizzle-orm/pg-core";
 import * as wkx from "wkx";
 import {Buffer} from 'buffer';
