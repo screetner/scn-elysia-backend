@@ -1,26 +1,13 @@
-import {Elysia, t} from "elysia";
+import {Elysia} from "elysia";
 import {jwt} from "@elysiajs/jwt";
+import {JWTPayloadSchema} from "@/models/auth";
 
 export const jwtAccessSetup = new Elysia({
     name: "jwtAccess",
 }).use(
     jwt({
         name: "jwtAccess",
-        schema: t.Object({
-            userId : t.String(),
-            username : t.String(),
-            roleId : t.String(),
-            roleName : t.String(),
-            abilityScope: t.Object({
-                canRead: t.Boolean(),
-                canCreate: t.Boolean(),
-                canUpdate: t.Boolean(),
-                canDelete: t.Boolean(),
-            }),
-            email : t.String(),
-            orgId : t.String(),
-            orgName : t.String(),
-        }),
+        schema: JWTPayloadSchema,
         secret: process.env.JWT_SECRET || "secret",
         exp: "10m",
     })
@@ -31,9 +18,7 @@ export const jwtRefreshSetup = new Elysia({
 }).use(
     jwt({
         name: "jwtRefresh",
-        schema: t.Object({
-            userId: t.String(),
-        }),
+        schema: JWTPayloadSchema,
         secret: process.env.JWT_REFRESH_SECRET!,
         exp: "7d",
     })

@@ -10,6 +10,22 @@ export const LoginBody = t.Object({
     },
 )
 
+export const JWTPayloadSchema = t.Object({
+    userId : t.String(),
+    username : t.String(),
+    roleId : t.String(),
+    roleName : t.String(),
+    abilityScope: t.Object({
+        canRead: t.Boolean(),
+        canCreate: t.Boolean(),
+        canUpdate: t.Boolean(),
+        canDelete: t.Boolean(),
+    }),
+    email : t.String(),
+    orgId : t.String(),
+    orgName : t.String(),
+})
+
 export interface JWTPayload {
     userId: string,
     username: string,

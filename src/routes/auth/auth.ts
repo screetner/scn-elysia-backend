@@ -43,7 +43,7 @@ export const auth = (app: Elysia) =>
                             roleName: payload.roleName,
                             orgName: payload.orgName,
                             accessTokenExpiry : accessTokenExpire(600),
-                            refreshToken: await jwtRefresh.sign({userId: user.userId}),
+                            refreshToken: await jwtRefresh.sign(payload),
                         }
                     };
 
