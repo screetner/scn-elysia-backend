@@ -1,7 +1,8 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
-import {GetAssetByAssetId, GetAssetByOrgId} from "@/models/asset";
+import {GetAssetByAssetId} from "@/models/asset";
 import {findAssetsByIds, findAssetsByOrgId} from "@/routes/assets/asset-services";
+import {getGeo} from "@/routes/geolocation/geolocation-service";
 
 export const asset = (app: Elysia) =>
     app.group("assets", (app) => {
@@ -28,10 +29,17 @@ export const asset = (app: Elysia) =>
                 }
             )
             .get(
-                "/orgId/:orgId",
-                async ({error, params}) => {
+                "/orgId",
+                async ({error, payload}) => {
                     try {
-                        return await findAssetsByOrgId(params.orgId);
+                        const [border, assets] = await Promise.all([
+                            getGeo(payload.orgId!),
+                            findAssetsByOrgId(payload.orgId!),
+                        ]);
+                        return {
+                            border,
+                            assets,
+                        };
                     } catch (e) {
                         return error(500, e);
                     }
@@ -42,7 +50,6 @@ export const asset = (app: Elysia) =>
                         description: "Get Asset",
                         tags: ["Asset"],
                     },
-                    params: GetAssetByOrgId,
                     response: {},
                 }
             );

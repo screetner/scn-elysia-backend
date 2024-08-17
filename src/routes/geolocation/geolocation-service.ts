@@ -1,7 +1,7 @@
 import {db} from "@/database/database";
 import {eq} from "drizzle-orm";
 import {PostGeoBodyType} from "@/models/geolocation";
-import {organizationTable, userTable} from "@/database/schemas";
+import {organizationTable} from "@/database/schemas";
 
 export async function postGeo(body: PostGeoBodyType, organizationId: string) {
     const border = body;
@@ -13,11 +13,11 @@ export async function postGeo(body: PostGeoBodyType, organizationId: string) {
 }
 
 export async function getGeo(organizationId: string) {
-
-    return db.query.organizationTable.findFirst({
+    const border = await db.query.organizationTable.findFirst({
         columns: {
             border: true,
         },
         where: eq(organizationTable.organizationId, organizationId)
-    });
+    })
+    return border?.border ?? [];
 }

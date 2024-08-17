@@ -28,11 +28,13 @@ export const geolocation = (app: Elysia) =>
             })
             .get("/", async ({error, payload}) => {
                 try {
-                    const response = await getGeo(payload!.orgId)
+                    const response = getGeo(payload!.orgId)
 
                     if (!response) return error(401, "Unauthorized")
 
-                    return response;
+                    return {
+                        border: response
+                    };
                 } catch (e) {
                     return error(500, e)
                 }
