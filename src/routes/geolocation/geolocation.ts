@@ -28,7 +28,7 @@ export const geolocation = (app: Elysia) =>
             })
             .get("/", async ({error, payload}) => {
                 try {
-                    const response = getGeo(payload!.orgId)
+                    const response = await getGeo(payload!.orgId)
 
                     if (!response) return error(401, "Unauthorized")
 
