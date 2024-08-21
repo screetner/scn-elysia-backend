@@ -49,8 +49,8 @@ export const asset = (app: Elysia) =>
                         title: "Get Asset",
                         description: "Get Asset",
                         tags: ["Asset"],
-                    },
+                   },
                     response: {},
                 }
-            );
+            )
     });

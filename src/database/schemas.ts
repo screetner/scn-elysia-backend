@@ -43,8 +43,9 @@ export const assetTable = pgTable('assets', {
 export const organizationTable = pgTable('organizations', {
     organizationId: text('organizationId').primaryKey().$defaultFn(createId),
     name: varchar('name', { length: 255 }).notNull(),
-    // border: geometry('border', { type: 'polygon', srid: 4326}),
     border: polygonDB('border'),
+    sasToken: varchar('sasToken', { length: 255 }),
+    sasTokenExpireDate: timestamp('sasTokenExpireDate').defaultNow(),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt').defaultNow(),
 }, (table) => ({
