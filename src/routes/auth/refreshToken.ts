@@ -1,15 +1,17 @@
 import {Elysia} from "elysia";
 import {checkRefreshToken} from "@/middleware/jwtRequire";
-import {jwtAccessSetup} from "@/routes/auth/setup";
+import {jwtAccessSetup, jwtRefreshSetup} from "@/routes/auth/setup";
 import {accessTokenExpire} from "@/routes/auth/auth-services";
 
 export const refreshToken = new Elysia()
     .use(checkRefreshToken)
     .use(jwtAccessSetup)
-    .get("/refresh", async ({jwtAccess,payload}) => {
+    .use(jwtRefreshSetup)
+    .get("/refresh", async ({jwtAccess,payload, jwtRefresh}) => {
         return {
             accessToken: await jwtAccess.sign(payload),
             accessTokenExpiry : accessTokenExpire(600),
+            refreshToken: jwtRefresh.sign(payload)
         }
     }, {
         detail: {
