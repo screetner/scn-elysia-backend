@@ -9,7 +9,7 @@ export const jwtAccessSetup = new Elysia({
         name: "jwtAccess",
         schema: JWTPayloadSchema,
         secret: process.env.JWT_SECRET || "secret",
-        exp: "10m",
+        exp: "1m",
     })
 );
 

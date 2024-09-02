@@ -10,8 +10,8 @@ export const refreshToken = new Elysia()
     .get("/refresh", async ({jwtAccess,payload, jwtRefresh}) => {
         return {
             accessToken: await jwtAccess.sign(payload),
-            accessTokenExpiry : accessTokenExpire(600),
-            refreshToken: jwtRefresh.sign(payload)
+            accessTokenExpiry : accessTokenExpire(60),
+            refreshToken: await jwtRefresh.sign(payload)
         }
     }, {
         detail: {

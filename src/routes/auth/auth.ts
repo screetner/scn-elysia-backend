@@ -42,7 +42,7 @@ export const auth = (app: Elysia) =>
                             email: payload.email,
                             roleName: payload.roleName,
                             orgName: payload.orgName,
-                            accessTokenExpiry : accessTokenExpire(600),
+                            accessTokenExpiry : accessTokenExpire(60),
                             refreshToken: await jwtRefresh.sign(payload),
                         }
                     };

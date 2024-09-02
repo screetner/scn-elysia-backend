@@ -33,4 +33,4 @@ const app = new Elysia()
     .use(routes.sample)
     .use(routes.asset)
     .get("/", () => "Hello Elysia")
-    .listen(3000);
+    .listen(3001);
