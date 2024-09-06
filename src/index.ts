@@ -4,7 +4,7 @@ import * as routes from "@/routes";
 import {jwt} from "@elysiajs/jwt";
 import { Logestic } from 'logestic';
 
-const app = new Elysia()
+new Elysia()
     .use(Logestic.preset('common'))
     .use(jwt({
         name: "jwt",
@@ -32,5 +32,6 @@ const app = new Elysia()
     .use(routes.geolocation)
     .use(routes.sample)
     .use(routes.asset)
+    .use(routes.role)
     .get("/", () => "Hello Elysia")
     .listen(3000);
