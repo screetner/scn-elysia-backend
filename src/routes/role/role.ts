@@ -1,6 +1,7 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
 import {getRoleOrganization} from "@/routes/role/role-service";
+import {roleInOrg} from "@/models/role";
 
 export const role = (app: Elysia) =>
     app.group("role", (app) => {
@@ -8,7 +9,7 @@ export const role = (app: Elysia) =>
             .use(checkAccessToken)
             .get("/", async ({error, payload}) => {
                 try {
-                    const response = await getRoleOrganization(payload!.orgId)
+                    const response: roleInOrg[] = await getRoleOrganization(payload!.orgId)
 
                     if (!response) return error(401, "Unauthorized")
 
