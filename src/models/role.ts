@@ -75,3 +75,18 @@ export const UpdateRoleName = t.Object({
     roleId : t.String(),
     newName : t.String(),
 })
+
+export const UpdateRolePermission = t.Object({
+    roleId : t.String(),
+    permission : t.Object({
+        mobile : t.Object({
+            access : t.Boolean(),
+            videosProcess : t.Boolean(),
+        }),
+        web : t.Object({
+            access : t.Boolean(),
+            manageGeometry : t.Boolean(),
+            roleSetting : t.Boolean(),
+        })
+    })
+})

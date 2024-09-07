@@ -5,7 +5,7 @@ import {
     getRoleInformation,
     getRoleOrganization,
     getUnassignedRole,
-    unassignRole
+    unassignRole, updateRolePermission
 } from "@/routes/role/role-service";
 import {
     AssignRoleBody,
@@ -13,7 +13,7 @@ import {
     updateRoleUser,
     roleInOrg,
     roleManagement,
-    roleMemberInformation, UnassignRoleBody, UpdateRoleName, updateRoleName, roleInformation
+    roleMemberInformation, UnassignRoleBody, UpdateRoleName, updateRoleName, roleInformation, UpdateRolePermission
 } from "@/models/role";
 
 export const role = (app: Elysia) =>
@@ -165,6 +165,24 @@ export const role = (app: Elysia) =>
                     description: "Create New Role in Organization",
                     tags: ["Role"]
                 }
+            })
+            .put('/permission', async ({error, payload, body}) => {
+                try {
+                    const response: roleInformation = await updateRolePermission(body.roleId, body.permission, payload!.orgId);
+
+                    if (!response) return error(401, "Unauthorized");
+
+                    return response;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    title: "Update Role Permission",
+                    description: "Update Role Permission in Organization by RoleId",
+                    tags: ["Role"]
+                },
+                body: UpdateRolePermission
             })
     },
     );

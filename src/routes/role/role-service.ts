@@ -212,3 +212,27 @@ export async function createRole(organizationId: string): Promise<roleModel.role
 
     return newRole;
 }
+
+export async function updateRolePermission(roleId: string, permission: roleModel.rolePermission, organizationId: string): Promise<roleModel.roleInformation> {
+    const [role] = await db.select({
+        roleId: schemas.roleTable.roleId,
+        roleName: schemas.roleTable.roleName,
+    })
+        .from(schemas.roleTable)
+        .where(and(
+            eq(schemas.roleTable.roleId, roleId),
+            eq(schemas.roleTable.organizationId, organizationId),
+        ));
+
+    if (!role) {
+        throw new Error(`Role with ID ${roleId} not found in organization ${organizationId}`);
+    }
+
+    await db.update(schemas.roleTable)
+        .set({
+            abilityScope: permission,
+        })
+        .where(eq(schemas.roleTable.roleId, roleId));
+
+    return role;
+}
