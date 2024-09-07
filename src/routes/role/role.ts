@@ -1,7 +1,7 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
-import {getRoleOrganization, getUnassignedRole} from "@/routes/role/role-service";
-import {roleInOrg, unassignedRole} from "@/models/role";
+import {getRoleInformation, getRoleOrganization, getUnassignedRole} from "@/routes/role/role-service";
+import {GetRoleInfoByRoleId, roleInOrg, roleManagement, roleMemberInformation} from "@/models/role";
 
 export const role = (app: Elysia) =>
     app.group("role", (app) => {
@@ -26,13 +26,13 @@ export const role = (app: Elysia) =>
             })
             .get('/unassigned-role', async ({error, payload}) => {
                 try {
-                    const response: unassignedRole[] = await getUnassignedRole(payload!.orgId)
+                    const response: roleMemberInformation[] = await getUnassignedRole(payload!.orgId);
 
-                    if (!response) return error(401, "Unauthorized")
+                    if (!response) return error(401, "Unauthorized");
 
                     return response;
                 } catch (e) {
-                    return error(500, e)
+                    return error(500, e);
                 }
             }, {
                 detail: {
@@ -40,6 +40,25 @@ export const role = (app: Elysia) =>
                     description: "Get All Unassigned Role of users in Organization",
                     tags: ["Role"]
                 }
+            })
+            .get('/:roleId', async ({error, params, payload}) => {
+                try {
+                    const roleId = params.roleId;
+                    const response: roleManagement = await getRoleInformation(roleId, payload!.orgId);
+
+                    if (!response) return error(401, "Unauthorized");
+
+                    return response;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    title: "Get Role Information",
+                    description: "Get Role Information and Members Information by RoleId",
+                    tags: ["Role"]
+                },
+                params: GetRoleInfoByRoleId
             })
     },
     );
