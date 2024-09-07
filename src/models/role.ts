@@ -35,8 +35,17 @@ export interface roleManagement {
     rolePermissions: rolePermission,
 }
 
+export interface roleAssign {
+    userId: string,
+}
+
 export const DEFAULT_ROLE = 'Default';
 
 export const GetRoleInfoByRoleId = t.Object({
+    roleId : t.String()
+})
+
+export const AssignRoleBody = t.Object({
+    userId : t.Array(t.String()),
     roleId : t.String()
 })

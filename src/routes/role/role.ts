@@ -1,7 +1,14 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
-import {getRoleInformation, getRoleOrganization, getUnassignedRole} from "@/routes/role/role-service";
-import {GetRoleInfoByRoleId, roleInOrg, roleManagement, roleMemberInformation} from "@/models/role";
+import {assignRole, getRoleInformation, getRoleOrganization, getUnassignedRole} from "@/routes/role/role-service";
+import {
+    AssignRoleBody,
+    GetRoleInfoByRoleId,
+    roleAssign,
+    roleInOrg,
+    roleManagement,
+    roleMemberInformation
+} from "@/models/role";
 
 export const role = (app: Elysia) =>
     app.group("role", (app) => {
@@ -59,6 +66,23 @@ export const role = (app: Elysia) =>
                     tags: ["Role"]
                 },
                 params: GetRoleInfoByRoleId
+            }).patch('/assign-role', async ({error, payload, body}) => {
+                try {
+                    const response: roleAssign[] = await assignRole(body.userId, body.roleId, payload!.orgId);
+
+                    if (!response) return error(401, "Unauthorized");
+
+                    return response;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    title: "Assign Role",
+                    description: "Assign Role to User",
+                    tags: ["Role"]
+                },
+                body: AssignRoleBody
             })
     },
     );
