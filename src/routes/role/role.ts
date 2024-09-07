@@ -1,7 +1,7 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
 import {
-    assignRole, changeRoleName, deleteRole,
+    assignRole, changeRoleName, createRole, deleteRole,
     getRoleInformation,
     getRoleOrganization,
     getUnassignedRole,
@@ -148,6 +148,23 @@ export const role = (app: Elysia) =>
                     tags: ["Role"]
                 },
                 params: RoleIdParams
+            })
+            .post('/new-role', async ({error, payload}) => {
+                try {
+                    const response: roleInformation = await createRole(payload!.orgId);
+
+                    if (!response) return error(401, "Unauthorized");
+
+                    return response;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    title: "Create New Role",
+                    description: "Create New Role in Organization",
+                    tags: ["Role"]
+                }
             })
     },
     );

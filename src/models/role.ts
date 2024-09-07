@@ -45,6 +45,18 @@ export interface updateRoleName {
 }
 
 export const DEFAULT_ROLE = 'Default';
+export const NEW_ROLE = 'New Role';
+export const DEFAULT_PERMISSION: rolePermission = {
+    mobile: {
+        access: true,
+        videosProcess: false,
+    },
+    web: {
+        access: true,
+        manageGeometry: false,
+        roleSetting: false,
+    },
+}
 
 export const RoleIdParams = t.Object({
     roleId : t.String()

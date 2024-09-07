@@ -1,5 +1,5 @@
 import {db} from "@/database/database";
-import {and, count, eq, inArray, not, notExists} from "drizzle-orm";
+import {and, count, eq, inArray, like, not, notExists} from "drizzle-orm";
 import * as schemas from "@/database/schemas";
 import * as roleModel from "@/models/role";
 
@@ -183,4 +183,32 @@ export async function deleteRole(roleId: string, organizationId: string): Promis
         .where(eq(schemas.roleTable.roleId, roleId));
 
     return role;
+}
+
+export async function createRole(organizationId: string): Promise<roleModel.roleInformation> {
+    let roleName = roleModel.NEW_ROLE;
+
+    const existingRoles = await db.select({
+        roleName: schemas.roleTable.roleName,
+    })
+        .from(schemas.roleTable)
+        .where(and(
+            eq(schemas.roleTable.organizationId, organizationId),
+            like(schemas.roleTable.roleName, `${roleModel.NEW_ROLE}%`)
+        ));
+
+    if (existingRoles.length > 0) {
+        const suffix = existingRoles.length;
+        roleName = `${roleModel.NEW_ROLE} ${suffix}`;
+    }
+
+    const [newRole] = await db.insert(schemas.roleTable)
+        .values({
+            organizationId,
+            roleName,
+            abilityScope: roleModel.DEFAULT_PERMISSION,
+        })
+        .returning({ roleId: schemas.roleTable.roleId, roleName: schemas.roleTable.roleName });
+
+    return newRole;
 }
