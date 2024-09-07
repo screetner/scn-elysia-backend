@@ -1,20 +1,26 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
-import {assignRole, getRoleInformation, getRoleOrganization, getUnassignedRole} from "@/routes/role/role-service";
+import {
+    assignRole,
+    getRoleInformation,
+    getRoleOrganization,
+    getUnassignedRole,
+    unassignRole
+} from "@/routes/role/role-service";
 import {
     AssignRoleBody,
     GetRoleInfoByRoleId,
-    roleAssign,
+    updateRole,
     roleInOrg,
     roleManagement,
-    roleMemberInformation
+    roleMemberInformation, UnassignRoleBody
 } from "@/models/role";
 
 export const role = (app: Elysia) =>
     app.group("role", (app) => {
         return app
             .use(checkAccessToken)
-            .get("/", async ({error, payload}) => {
+            .get('/', async ({error, payload}) => {
                 try {
                     const response: roleInOrg[] = await getRoleOrganization(payload!.orgId)
 
@@ -31,7 +37,7 @@ export const role = (app: Elysia) =>
                     tags: ["Role"]
                 }
             })
-            .get('/unassigned-role', async ({error, payload}) => {
+            .get('/unassigned', async ({error, payload}) => {
                 try {
                     const response: roleMemberInformation[] = await getUnassignedRole(payload!.orgId);
 
@@ -66,9 +72,10 @@ export const role = (app: Elysia) =>
                     tags: ["Role"]
                 },
                 params: GetRoleInfoByRoleId
-            }).patch('/assign-role', async ({error, payload, body}) => {
+            })
+            .patch('/assign-role', async ({error, payload, body}) => {
                 try {
-                    const response: roleAssign[] = await assignRole(body.userId, body.roleId, payload!.orgId);
+                    const response: updateRole[] = await assignRole(body.userId, body.roleId, payload!.orgId);
 
                     if (!response) return error(401, "Unauthorized");
 
@@ -83,6 +90,23 @@ export const role = (app: Elysia) =>
                     tags: ["Role"]
                 },
                 body: AssignRoleBody
+            }).patch('/unassign-role', async ({error, payload, body}) => {
+                try {
+                    const response: updateRole = await unassignRole(body.userId, payload!.orgId);
+
+                    if (!response) return error(401, "Unauthorized");
+
+                    return response;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    title: "Unassign Role",
+                    description: "Unassign Role from User",
+                    tags: ["Role"]
+                },
+                body: UnassignRoleBody
             })
     },
     );

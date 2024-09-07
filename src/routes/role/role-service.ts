@@ -1,5 +1,5 @@
 import {db} from "@/database/database";
-import {and, count, eq, inArray} from "drizzle-orm";
+import {and, count, eq, inArray, not} from "drizzle-orm";
 import * as schemas from "@/database/schemas";
 import * as roleModel from "@/models/role";
 
@@ -54,7 +54,7 @@ export async function getRoleInformation(roleId: string, organizationId: string)
     };
 }
 
-export async function assignRole(userIds: string[], roleId: string, organizationId: string): Promise<roleModel.roleAssign[]> {
+export async function assignRole(userIds: string[], roleId: string, organizationId: string): Promise<roleModel.updateRole[]> {
     const [newRole] = await db.select({
         roleId: schemas.roleTable.roleId,
         organizationId: schemas.roleTable.organizationId,
@@ -91,4 +91,41 @@ export async function assignRole(userIds: string[], roleId: string, organization
         })
         .where(inArray(schemas.userTable.userId, userIds))
         .returning({userId: schemas.userTable.userId});
+}
+
+export async function unassignRole(userId: string, organizationId: string): Promise<roleModel.updateRole> {
+    const [defaultRole] = await db.select({
+        roleId: schemas.roleTable.roleId,
+    })
+        .from(schemas.roleTable)
+        .where(and(eq(schemas.roleTable.organizationId, organizationId), eq(schemas.roleTable.roleName, roleModel.DEFAULT_ROLE)));
+
+    if (!defaultRole) {
+        throw new Error(`Default role not found in organization ${organizationId}`);
+    }
+
+    const [userData] = await db.select({
+        userId: schemas.userTable.userId,
+        username: schemas.userTable.username,
+    })
+        .from(schemas.userTable)
+        .leftJoin(schemas.roleTable, eq(schemas.userTable.roleId, schemas.roleTable.roleId))
+        .where(and(
+            eq(schemas.userTable.userId, userId),
+            not(eq(schemas.userTable.roleId, defaultRole.roleId)),
+            eq(schemas.roleTable.organizationId, organizationId),
+        ));
+
+    if (!userData) {
+        throw new Error(`User ${userId} not found or already has the default role`);
+    }
+
+    const [updatedUser] = await db.update(schemas.userTable)
+        .set({
+            roleId: defaultRole.roleId,
+        })
+        .where(eq(schemas.userTable.userId, userId))
+        .returning({ userId: schemas.userTable.userId });
+
+    return updatedUser;
 }

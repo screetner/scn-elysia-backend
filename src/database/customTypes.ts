@@ -10,7 +10,7 @@ export const polygonDB = customType<
     }
 >({
     dataType() {
-        return 'GEOMETRY(POLYGON, 4326)';
+        return 'geometry(POLYGON, 4326)';
     },
     toDriver(value: PostGeoBodyType): string {
         const points = value.map(point => `${point.longitude} ${point.latitude}`).join(', ');

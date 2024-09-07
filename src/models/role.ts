@@ -35,7 +35,7 @@ export interface roleManagement {
     rolePermissions: rolePermission,
 }
 
-export interface roleAssign {
+export interface updateRole {
     userId: string,
 }
 
@@ -48,4 +48,8 @@ export const GetRoleInfoByRoleId = t.Object({
 export const AssignRoleBody = t.Object({
     userId : t.Array(t.String()),
     roleId : t.String()
+})
+
+export const UnassignRoleBody = t.Object({
+    userId : t.String()
 })
