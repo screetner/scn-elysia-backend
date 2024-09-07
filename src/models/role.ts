@@ -46,7 +46,7 @@ export interface updateRoleName {
 
 export const DEFAULT_ROLE = 'Default';
 
-export const GetRoleInfoByRoleId = t.Object({
+export const RoleIdParams = t.Object({
     roleId : t.String()
 })
 

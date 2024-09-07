@@ -1,5 +1,5 @@
 import {db} from "@/database/database";
-import {and, count, eq, inArray, not} from "drizzle-orm";
+import {and, count, eq, inArray, not, notExists} from "drizzle-orm";
 import * as schemas from "@/database/schemas";
 import * as roleModel from "@/models/role";
 
@@ -157,4 +157,30 @@ export async function changeRoleName(roleId: string, roleName: string, organizat
         oldName: role.roleName,
         newName: newName.roleName,
     };
+}
+
+export async function deleteRole(roleId: string, organizationId: string): Promise<roleModel.roleInformation> {
+    const [role] = await db.select({
+        roleId: schemas.roleTable.roleId,
+        roleName: schemas.roleTable.roleName,
+    })
+        .from(schemas.roleTable)
+        .where(and(
+            eq(schemas.roleTable.roleId, roleId),
+            eq(schemas.roleTable.organizationId, organizationId),
+            notExists(
+                db.select()
+                    .from(schemas.userTable)
+                    .where(eq(schemas.userTable.roleId, roleId))
+            ),
+        ));
+
+    if (!role) {
+        throw new Error(`Role with ID ${roleId} not found in organization ${organizationId} or has users assigned`);
+    }
+
+    await db.delete(schemas.roleTable)
+        .where(eq(schemas.roleTable.roleId, roleId));
+
+    return role;
 }

@@ -1,7 +1,7 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
 import {
-    assignRole, changeRoleName,
+    assignRole, changeRoleName, deleteRole,
     getRoleInformation,
     getRoleOrganization,
     getUnassignedRole,
@@ -9,11 +9,11 @@ import {
 } from "@/routes/role/role-service";
 import {
     AssignRoleBody,
-    GetRoleInfoByRoleId,
+    RoleIdParams,
     updateRoleUser,
     roleInOrg,
     roleManagement,
-    roleMemberInformation, UnassignRoleBody, UpdateRoleName, updateRoleName
+    roleMemberInformation, UnassignRoleBody, UpdateRoleName, updateRoleName, roleInformation
 } from "@/models/role";
 
 export const role = (app: Elysia) =>
@@ -71,7 +71,7 @@ export const role = (app: Elysia) =>
                     description: "Get Role Information and Members Information by RoleId",
                     tags: ["Role"]
                 },
-                params: GetRoleInfoByRoleId
+                params: RoleIdParams
             })
             .patch('/assign-role', async ({error, payload, body}) => {
                 try {
@@ -129,6 +129,25 @@ export const role = (app: Elysia) =>
                     tags: ["Role"]
                 },
                 body: UpdateRoleName
+            })
+            .delete('/remove/:roleId', async ({error, params, payload}) => {
+                try {
+                    const roleId = params.roleId;
+                    const response: roleInformation = await deleteRole(roleId, payload!.orgId);
+
+                    if (!response) return error(401, "Unauthorized");
+
+                    return response;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    title: "Remove Role",
+                    description: "Remove Role from Organization",
+                    tags: ["Role"]
+                },
+                params: RoleIdParams
             })
     },
     );
