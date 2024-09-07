@@ -1,7 +1,7 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
 import {
-    assignRole,
+    assignRole, changeRoleName,
     getRoleInformation,
     getRoleOrganization,
     getUnassignedRole,
@@ -10,10 +10,10 @@ import {
 import {
     AssignRoleBody,
     GetRoleInfoByRoleId,
-    updateRole,
+    updateRoleUser,
     roleInOrg,
     roleManagement,
-    roleMemberInformation, UnassignRoleBody
+    roleMemberInformation, UnassignRoleBody, UpdateRoleName, updateRoleName
 } from "@/models/role";
 
 export const role = (app: Elysia) =>
@@ -75,7 +75,7 @@ export const role = (app: Elysia) =>
             })
             .patch('/assign-role', async ({error, payload, body}) => {
                 try {
-                    const response: updateRole[] = await assignRole(body.userId, body.roleId, payload!.orgId);
+                    const response: updateRoleUser[] = await assignRole(body.userId, body.roleId, payload!.orgId);
 
                     if (!response) return error(401, "Unauthorized");
 
@@ -92,7 +92,7 @@ export const role = (app: Elysia) =>
                 body: AssignRoleBody
             }).patch('/unassign-role', async ({error, payload, body}) => {
                 try {
-                    const response: updateRole = await unassignRole(body.userId, payload!.orgId);
+                    const response: updateRoleUser = await unassignRole(body.userId, payload!.orgId);
 
                     if (!response) return error(401, "Unauthorized");
 
@@ -107,6 +107,28 @@ export const role = (app: Elysia) =>
                     tags: ["Role"]
                 },
                 body: UnassignRoleBody
+            })
+            .patch('/update-role-name', async ({error, payload, body}) => {
+                try {
+                    if (!body.newName || body.newName.trim() === "") {
+                        return error(400, "Role name cannot be empty");
+                    }
+
+                    const response: updateRoleName = await changeRoleName(body.roleId, body.newName, payload!.orgId);
+
+                    if (!response) return error(401, "Unauthorized");
+
+                    return response;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    title: "Update Role Name",
+                    description: "Update Role Name",
+                    tags: ["Role"]
+                },
+                body: UpdateRoleName
             })
     },
     );

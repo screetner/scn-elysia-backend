@@ -54,7 +54,7 @@ export async function getRoleInformation(roleId: string, organizationId: string)
     };
 }
 
-export async function assignRole(userIds: string[], roleId: string, organizationId: string): Promise<roleModel.updateRole[]> {
+export async function assignRole(userIds: string[], roleId: string, organizationId: string): Promise<roleModel.updateRoleUser[]> {
     const [newRole] = await db.select({
         roleId: schemas.roleTable.roleId,
         organizationId: schemas.roleTable.organizationId,
@@ -93,7 +93,7 @@ export async function assignRole(userIds: string[], roleId: string, organization
         .returning({userId: schemas.userTable.userId});
 }
 
-export async function unassignRole(userId: string, organizationId: string): Promise<roleModel.updateRole> {
+export async function unassignRole(userId: string, organizationId: string): Promise<roleModel.updateRoleUser> {
     const [defaultRole] = await db.select({
         roleId: schemas.roleTable.roleId,
     })
@@ -128,4 +128,33 @@ export async function unassignRole(userId: string, organizationId: string): Prom
         .returning({ userId: schemas.userTable.userId });
 
     return updatedUser;
+}
+
+export async function changeRoleName(roleId: string, roleName: string, organizationId: string): Promise<roleModel.updateRoleName> {
+    const [role] = await db.select({
+        roleId: schemas.roleTable.roleId,
+        roleName: schemas.roleTable.roleName,
+    })
+        .from(schemas.roleTable)
+        .where(and(
+            eq(schemas.roleTable.roleId, roleId),
+            eq(schemas.roleTable.organizationId, organizationId),
+        ));
+
+    if (!role) {
+        throw new Error(`Role with ID ${roleId} not found in organization ${organizationId}`);
+    }
+
+    const [newName] = await db.update(schemas.roleTable)
+        .set({
+            roleName,
+        })
+        .where(eq(schemas.roleTable.roleId, roleId))
+        .returning({ roleName: schemas.roleTable.roleName });
+
+    return {
+        roleId: roleId,
+        oldName: role.roleName,
+        newName: newName.roleName,
+    };
 }

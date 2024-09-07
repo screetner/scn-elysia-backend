@@ -35,8 +35,13 @@ export interface roleManagement {
     rolePermissions: rolePermission,
 }
 
-export interface updateRole {
+export interface updateRoleUser {
     userId: string,
+}
+export interface updateRoleName {
+    roleId: string,
+    oldName: string,
+    newName: string,
 }
 
 export const DEFAULT_ROLE = 'Default';
@@ -52,4 +57,9 @@ export const AssignRoleBody = t.Object({
 
 export const UnassignRoleBody = t.Object({
     userId : t.String()
+})
+
+export const UpdateRoleName = t.Object({
+    roleId : t.String(),
+    newName : t.String(),
 })
