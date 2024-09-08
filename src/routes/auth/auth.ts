@@ -7,6 +7,7 @@ import {JWTPayload, LoginBody} from "@/models/auth";
 import {jwtAccessSetup, jwtRefreshSetup} from "@/routes/auth/setup";
 import {CustomResponse} from "@/custom/Response";
 import {refreshToken} from "@/routes/auth/refreshToken";
+import {rolePermission} from "@/models/role";
 
 export const auth = (app: Elysia) =>
     app.group("auth", (app) => {
@@ -29,7 +30,7 @@ export const auth = (app: Elysia) =>
                         username : user.username,
                         roleId : user.role.roleId,
                         roleName : user.role.roleName,
-                        abilityScope: user.role.abilityScope,
+                        abilityScope: user.role.abilityScope as rolePermission,
                         email : user.email,
                         orgId : user.role.organizationId,
                         orgName : user.role.organization.name,
