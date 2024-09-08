@@ -32,7 +32,6 @@ export const role = (app: Elysia) =>
                 }
             }, {
                 detail: {
-                    title: "Get Role Organization",
                     description: "Get All Role Organization for Organization",
                     tags: ["Role"]
                 }
@@ -49,7 +48,6 @@ export const role = (app: Elysia) =>
                 }
             }, {
                 detail: {
-                    title: "Get Unassigned Role",
                     description: "Get All Unassigned Role of users in Organization",
                     tags: ["Role"]
                 }
@@ -67,7 +65,6 @@ export const role = (app: Elysia) =>
                 }
             }, {
                 detail: {
-                    title: "Get Role Information",
                     description: "Get Role Information and Members Information by RoleId",
                     tags: ["Role"]
                 },
@@ -85,7 +82,6 @@ export const role = (app: Elysia) =>
                 }
             }, {
                 detail: {
-                    title: "Assign Role",
                     description: "Assign Role to User",
                     tags: ["Role"]
                 },
@@ -102,7 +98,6 @@ export const role = (app: Elysia) =>
                 }
             }, {
                 detail: {
-                    title: "Unassign Role",
                     description: "Unassign Role from User",
                     tags: ["Role"]
                 },
@@ -124,7 +119,6 @@ export const role = (app: Elysia) =>
                 }
             }, {
                 detail: {
-                    title: "Update Role Name",
                     description: "Update Role Name",
                     tags: ["Role"]
                 },
@@ -143,7 +137,6 @@ export const role = (app: Elysia) =>
                 }
             }, {
                 detail: {
-                    title: "Remove Role",
                     description: "Remove Role from Organization",
                     tags: ["Role"]
                 },
@@ -161,7 +154,6 @@ export const role = (app: Elysia) =>
                 }
             }, {
                 detail: {
-                    title: "Create New Role",
                     description: "Create New Role in Organization",
                     tags: ["Role"]
                 }
@@ -178,7 +170,6 @@ export const role = (app: Elysia) =>
                 }
             }, {
                 detail: {
-                    title: "Update Role Permission",
                     description: "Update Role Permission in Organization by RoleId",
                     tags: ["Role"]
                 },
