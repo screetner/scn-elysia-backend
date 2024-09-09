@@ -1,5 +1,6 @@
 import {Elysia} from "elysia";
 import {jwtAccessSetup, jwtRefreshSetup} from "@/routes/auth/setup";
+import {JWTPayload} from "@/models/auth";
 
 // @ts-ignore
 const checkImproperToken = async (token: string | undefined, set, jwtVerifier) => {
@@ -7,7 +8,7 @@ const checkImproperToken = async (token: string | undefined, set, jwtVerifier) =
         set.status = 401;
         throw Error("Access token is missing");
     }
-    const payload = await jwtVerifier.verify(token);
+    const payload: JWTPayload = await jwtVerifier.verify(token);
     if (!payload) {
         set.status = 403;
         throw Error("Access token is invalid");
