@@ -30,6 +30,7 @@ export const JWTPayloadSchema = t.Object({
     email : t.String(),
     orgId : t.String(),
     orgName : t.String(),
+    refreshTokenExpiry: t.Date(),
 })
 
 export interface JWTPayload {
@@ -41,6 +42,7 @@ export interface JWTPayload {
     email : string,
     orgId : string,
     orgName : string,
+    refreshTokenExpiry: Date,
 }
 
 export type LoginBodyType = Static<typeof LoginBody>

@@ -8,6 +8,7 @@ import {
     text,
     timestamp,
     varchar,
+    unique,
 } from 'drizzle-orm/pg-core';
 import {createId} from "@paralleldrive/cuid2";
 import {relations} from "drizzle-orm";
@@ -94,6 +95,22 @@ export const videoSessionTable = pgTable('videoSessions', {
     updatedAt: timestamp('updatedAt').defaultNow(),
 });
 
+//Token Table
+export const tokenEnum = pgEnum('token_type', ['Access', 'Refresh', 'Tusd']);
+
+export const tokenTable = pgTable('tokens', {
+    tokenId: text('tokenId').primaryKey().$defaultFn(createId),
+    userId: text('userId').references(() => userTable.userId).notNull(),
+    tokenType: tokenEnum('tokenType').notNull(),
+    token: text('token').notNull(),
+    createdAt: timestamp('createdAt').defaultNow(),
+    updatedAt: timestamp('updatedAt').defaultNow(),
+}, (table) => ({
+    userIdIdx: index('token_userId_idx').on(table.userId),
+    tokenTypeIdx: index('token_tokenType_idx').on(table.tokenType),
+    tokenIdx: index('token_token_idx').on(table.token),
+    userIdTypeUniqueIdx: unique('token_userId_type_unique_idx').on(table.userId, table.tokenType),
+}));
 
 // Relations
 export const organizationRelations = relations(organizationTable, ({ many }) => ({
@@ -113,7 +130,8 @@ export const userRelation = relations(userTable, ({ one, many }) => ({
         fields: [userTable.roleId],
         references: [roleTable.roleId],
     }),
-    asset: many(assetTable)
+    asset: many(assetTable),
+    token: many(tokenTable)
 }));
 
 export const assetTypeRelations = relations(assetTypeTable, ({ many }) => ({
@@ -127,6 +145,13 @@ export const assetRelations = relations(assetTable, ({ one }) => ({
     }),
     user: one(userTable, {
         fields: [assetTable.recordedUser],
+        references: [userTable.userId],
+    }),
+}));
+
+export const tokenRelations = relations(tokenTable, ({ one }) => ({
+    user: one(userTable, {
+        fields: [tokenTable.userId],
         references: [userTable.userId],
     }),
 }));
