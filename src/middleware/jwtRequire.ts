@@ -1,5 +1,5 @@
 import {Elysia} from "elysia";
-import {jwtAccessSetup, jwtRefreshSetup} from "@/routes/auth/setup";
+import {jwtAccessSetup, jwtRefreshSetup, jwtTusdSetup} from "@/routes/auth/setup";
 import {JWTPayload} from "@/models/auth";
 
 // @ts-ignore
@@ -29,4 +29,11 @@ export const checkRefreshToken = (app: Elysia) =>
         .derive(async function handler({jwtRefresh, set, request: {headers}}) {
             const token = headers.get("AuthorizationRefresh")?.split(" ")[1];
             return checkImproperToken(token, "Refresh token", set, jwtRefresh);
+        });
+
+export const checkTusdToken = (app: Elysia) =>
+    app.use(jwtTusdSetup)
+        .derive(async function handler({jwtTusd, set, request: {headers}}) {
+            const token = headers.get("AuthorizationTusd")?.split(" ")[1];
+            return checkImproperToken(token, "Tusd token", set, jwtTusd);
         });

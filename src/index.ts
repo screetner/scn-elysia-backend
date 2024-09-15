@@ -34,5 +34,6 @@ new Elysia()
     .use(routes.asset)
     .use(routes.role)
     .use(routes.user)
+    .use(routes.tusd)
     .get("/", () => "Hello Elysia")
     .listen(3000);

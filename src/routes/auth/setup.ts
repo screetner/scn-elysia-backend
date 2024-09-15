@@ -23,3 +23,14 @@ export const jwtRefreshSetup = new Elysia({
         exp: "7d",
     })
 );
+
+export const jwtTusdSetup = new Elysia({
+    name: "jwtTusd",
+}).use(
+    jwt({
+        name: "jwtTusd",
+        schema: JWTPayloadSchema,
+        secret: process.env.JWT_TUSD_SECRET!,
+        exp: "7d",
+    })
+);

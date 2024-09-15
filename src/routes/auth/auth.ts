@@ -4,7 +4,6 @@ import {
     findUser
 } from "./auth-services"
 import {JWTPayload, LoginBody} from "@/models/auth";
-import {jwtAccessSetup, jwtRefreshSetup} from "@/routes/auth/setup";
 import {CustomResponse} from "@/custom/Response";
 import {refreshToken} from "@/routes/auth/refreshToken";
 import {rolePermission} from "@/models/role";
@@ -12,10 +11,8 @@ import {rolePermission} from "@/models/role";
 export const auth = (app: Elysia) =>
     app.group("auth", (app) => {
         return app
-            .use(jwtAccessSetup)
-            .use(jwtRefreshSetup)
             .use(refreshToken)
-            .post("/login", async ({body, error, jwtAccess, jwtRefresh}) => {
+            .post("/login", async ({body, error, jwtAccess, jwtRefresh, jwtTusd}) => {
                 try{
                     const user = await findUser(body)
 
@@ -45,7 +42,9 @@ export const auth = (app: Elysia) =>
                             orgName: payload.orgName,
                             accessTokenExpiry : accessTokenExpire(60),
                             refreshToken: await jwtRefresh.sign(payload),
-                            refreshTokenExpiry : accessTokenExpire(60*60*24*7)
+                            refreshTokenExpiry : accessTokenExpire(60*60*24*7),
+                            tusdToken: await jwtTusd.sign(payload),
+                            tusdTokenExpiry : accessTokenExpire(60*60*24*7)
                         }
                     };
 
