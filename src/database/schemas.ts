@@ -94,10 +94,24 @@ export const videoSessionTable = pgTable('videoSessions', {
     updatedAt: timestamp('updatedAt').defaultNow(),
 });
 
+export const inviteTable = pgTable('invites', {
+    inviteId: text('inviteId').primaryKey().$defaultFn(createId),
+    organizationId: text('organizationId').references(() => organizationTable.organizationId).notNull(),
+    userId: text('userId').references(() => userTable.userId),
+    token: text('token').notNull(),
+    createdAt: timestamp('createdAt').defaultNow(),
+    activatedAt: timestamp('activatedAt'),
+}, (table) => ({
+    inviteIdIdx: index('invite_inviteId_idx').on(table.inviteId),
+    organizationIdIdx: index('invite_organizationId_idx').on(table.organizationId),
+    userIdIdx: index('invite_userId_idx').on(table.userId),
+}));
+
 
 // Relations
 export const organizationRelations = relations(organizationTable, ({ many }) => ({
-    role: many(roleTable)
+    role: many(roleTable),
+    invite: many(inviteTable)
 }));
 
 export const rolesRelations = relations(roleTable, ({ one, many }) => ({
@@ -113,7 +127,8 @@ export const userRelation = relations(userTable, ({ one, many }) => ({
         fields: [userTable.roleId],
         references: [roleTable.roleId],
     }),
-    asset: many(assetTable)
+    asset: many(assetTable),
+    invite: many(inviteTable)
 }));
 
 export const assetTypeRelations = relations(assetTypeTable, ({ many }) => ({
@@ -127,6 +142,17 @@ export const assetRelations = relations(assetTable, ({ one }) => ({
     }),
     user: one(userTable, {
         fields: [assetTable.recordedUser],
+        references: [userTable.userId],
+    }),
+}));
+
+export const inviteRelations = relations(inviteTable, ({ one }) => ({
+    organization: one(organizationTable, {
+        fields: [inviteTable.organizationId],
+        references: [organizationTable.organizationId],
+    }),
+    user: one(userTable, {
+        fields: [inviteTable.userId],
         references: [userTable.userId],
     }),
 }));

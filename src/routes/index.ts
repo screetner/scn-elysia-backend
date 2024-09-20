@@ -5,3 +5,4 @@ export * from "./assets/asset";
 export * from "./role/role";
 export * from "./user/user";
 export * from "./tusd/tusd";
+export * from "./member/member";

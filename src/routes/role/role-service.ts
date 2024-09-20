@@ -139,6 +139,7 @@ export async function changeRoleName(roleId: string, roleName: string, organizat
         .where(and(
             eq(schemas.roleTable.roleId, roleId),
             eq(schemas.roleTable.organizationId, organizationId),
+            not(eq(schemas.roleTable.roleName, roleModel.DEFAULT_ROLE)),
         ));
 
     if (!role) {
