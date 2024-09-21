@@ -1,6 +1,7 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
 import {countAdmins, countInvites, countMembers} from "@/routes/dashboard/dashboard-service";
+import {inviteInformation, memberInformation} from "@/models/dashboard";
 
 export const dashboard = (app: Elysia) =>
     app.group("dashboard", (app) => {
@@ -8,7 +9,7 @@ export const dashboard = (app: Elysia) =>
             .use(checkAccessToken)
             .get('/member', async ({error, payload}) => {
                 try {
-                    const response = await countMembers(payload.orgId);
+                    const response: memberInformation = await countMembers(payload.orgId);
 
                     if (!response) return error(401, "Unauthorized");
 
@@ -24,7 +25,7 @@ export const dashboard = (app: Elysia) =>
             })
             .get('/invite', async ({error, payload}) => {
                 try {
-                    const [response] = await countInvites(payload.orgId);
+                    const response: inviteInformation = await countInvites(payload.orgId);
 
                     if (!response) return error(401, "Unauthorized");
 

@@ -1,6 +1,9 @@
-export interface dashboardInformation {
-    members: number,
-    inviteTotal: number,
-    inviteActivate: number,
-    admin: number,
+export interface memberInformation {
+    allMembers: number;
+    percentageIncrease: number;
+}
+
+export interface inviteInformation {
+    inviteTotal: number;
+    inviteActivate: number;
 }
