@@ -12,10 +12,6 @@ new Elysia()
     }))
     .use(swagger({
         documentation: {
-            tags: [
-                { name: 'Auth', description: 'Authentication endpoints' },
-                { name: 'Sample', description: 'Sample endpoints' }
-            ],
             components: {
                 securitySchemes: {
                     bearerAuth: {
@@ -25,7 +21,7 @@ new Elysia()
                     }
                 }
             },
-            security: [{ bearerAuth: [] }]
+            security: [{ bearerAuth: [] }],
         },
         provider: 'swagger-ui'
     }))
@@ -40,3 +36,5 @@ new Elysia()
     .use(routes.dashboard)
     .get("/", () => "Hello Elysia")
     .listen(3000);
+
+console.log("server is running on http://localhost:3000");
