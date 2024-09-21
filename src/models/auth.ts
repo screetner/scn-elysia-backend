@@ -43,4 +43,16 @@ export interface JWTPayload {
     orgName : string,
 }
 
+export interface JWTInvitePayload {
+    email: string,
+    orgId: string,
+    roleId: string,
+}
+
+export const JWTInvitePayloadSchema = t.Object({
+    email: t.String(),
+    orgId: t.String(),
+    roleId: t.String(),
+})
+
 export type LoginBodyType = Static<typeof LoginBody>

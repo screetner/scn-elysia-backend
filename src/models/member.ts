@@ -8,6 +8,18 @@ export interface getRecentMember {
     createdAt: Date | null;
 }
 
+export interface sendInviteToken {
+    email: string;
+    token: string;
+}
+
+export const memberInvitesBody = t.Object({
+    defaultRoleId: t.String(),
+    emails: t.Array(t.String()),
+});
+
 export const memberRecentQuery = t.Object({
     limit: t.String(),
 });
+
+export const subject = 'Invitation to join organization';
