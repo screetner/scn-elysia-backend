@@ -26,13 +26,13 @@ export const member = (app: Elysia) =>
                 },
                 query: memberRecentQuery
             })
-            .post('/invites', async ({error, payload, body, jwtInvite}) => {
+            .post('/invite', async ({error, payload, body, jwtInvite}) => {
                 try {
                     await checkEmailExist(body.emails);
 
                     const sendInviteTokens: sendInviteToken[] = [];
                     await Promise.all(body.emails.map(async email => {
-                        const token = await jwtInvite.sign({ email, orgId: payload.orgId, roleId: payload.roleId });
+                        const token = await jwtInvite.sign({ email, orgId: payload.orgId, roleId: body.defaultRoleId });
                         console.log(token);
                         console.log(email);
                         sendInviteTokens.push({ email, token });
