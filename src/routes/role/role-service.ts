@@ -23,7 +23,7 @@ export async function getUnassignedRole(organizationId: string): Promise<roleMod
     })
         .from(schemas.userTable)
         .leftJoin(schemas.roleTable, eq(schemas.roleTable.roleId, schemas.userTable.roleId))
-        .where(eq(schemas.roleTable.organizationId, organizationId) && eq(schemas.roleTable.roleName, roleModel.DEFAULT_ROLE));
+        .where(and(eq(schemas.roleTable.organizationId, organizationId), eq(schemas.roleTable.roleName, roleModel.DEFAULT_ROLE)));
 }
 
 export async function getRoleInformation(roleId: string, organizationId: string): Promise<roleModel.roleManagement> {
