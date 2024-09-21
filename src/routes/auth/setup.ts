@@ -1,6 +1,6 @@
 import {Elysia} from "elysia";
 import {jwt} from "@elysiajs/jwt";
-import {JWTPayloadSchema} from "@/models/auth";
+import {JWTInvitePayloadSchema, JWTPayloadSchema} from "@/models/auth";
 
 export const jwtAccessSetup = new Elysia({
     name: "jwtAccess",
@@ -31,6 +31,17 @@ export const jwtTusdSetup = new Elysia({
         name: "jwtTusd",
         schema: JWTPayloadSchema,
         secret: process.env.JWT_TUSD_SECRET!,
+        exp: "7d",
+    })
+);
+
+export const jwtInviteSetup = new Elysia({
+    name: "jwtInvite",
+}).use(
+    jwt({
+        name: "jwtInvite",
+        schema: JWTInvitePayloadSchema,
+        secret: process.env.JWT_INVITE_SECRET!,
         exp: "7d",
     })
 );

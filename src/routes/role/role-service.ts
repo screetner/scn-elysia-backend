@@ -143,7 +143,7 @@ export async function changeRoleName(roleId: string, roleName: string, organizat
         ));
 
     if (!role) {
-        throw new Error(`Role with ID ${roleId} not found in organization ${organizationId}`);
+        throw new Error(`Role '${roleName}' not found in your organization`);
     }
 
     const [newName] = await db.update(schemas.roleTable)

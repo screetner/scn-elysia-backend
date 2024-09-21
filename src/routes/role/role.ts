@@ -32,6 +32,28 @@ export const role = (app: Elysia) =>
                 }
             }, {
                 detail: {
+                    description: "Get All Role Organization for Organization and Members foreach Role",
+                    tags: ["Role"]
+                }
+            })
+            .get('/option', async ({error, payload}) => {
+                try {
+                    const response: roleInOrg[] = await getRoleOrganization(payload!.orgId)
+                    const result = response.map((role) => {
+                        return {
+                            label: role.roleName,
+                            value: role.roleId
+                        }
+                    });
+
+                    if (!result) return error(401, "Unauthorized")
+
+                    return result;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
                     description: "Get All Role Organization for Organization",
                     tags: ["Role"]
                 }
