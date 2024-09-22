@@ -1,6 +1,6 @@
 import {Elysia} from "elysia";
 import {jwtAccessSetup, jwtInviteSetup, jwtRefreshSetup, jwtTusdSetup} from "@/routes/auth/setup";
-import {JWTPayload} from "@/models/auth";
+import {JWTInvitePayload, JWTPayload} from "@/models/auth";
 
 // @ts-ignore
 const checkImproperToken = async (token: string | undefined, tokenType: string, set, jwtVerifier) => {
@@ -9,6 +9,20 @@ const checkImproperToken = async (token: string | undefined, tokenType: string, 
         throw Error(`${tokenType} is missing`);
     }
     const payload: JWTPayload = await jwtVerifier.verify(token);
+    if (!payload) {
+        set.status = 403;
+        throw Error(`${tokenType} is invalid`);
+    }
+    return { payload };
+};
+
+// @ts-ignore
+const checkImproperInviteToken = async (token: string | undefined, tokenType: string, set, jwtVerifier) => {
+    if (!token) {
+        set.status = 401;
+        throw Error(`${tokenType} is missing`);
+    }
+    const payload: JWTInvitePayload = await jwtVerifier.verify(token);
     if (!payload) {
         set.status = 403;
         throw Error(`${tokenType} is invalid`);
@@ -41,6 +55,6 @@ export const checkTusdToken = (app: Elysia) =>
 export const checkInviteToken = (app: Elysia) =>
     app.use(jwtInviteSetup)
         .derive(async function handler({jwtInvite, set, request: {headers}}) {
-            const token = headers.get("AuthorizationInvite")?.split(" ")[1];
-            return checkImproperToken(token, "Invite token", set, jwtInvite);
+            const token = headers.get("AuthorizationRegister")?.split(" ")[1];
+            return checkImproperInviteToken(token, "Invite token", set, jwtInvite);
         });
