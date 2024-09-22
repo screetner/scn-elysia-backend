@@ -3,6 +3,7 @@ import {checkAccessToken, checkInviteToken} from "@/middleware/jwtRequire";
 import {memberInvitesBody, memberRecentQuery, memberRegisterBody, sendInviteToken} from "@/models/member";
 import {
     addInviteToDatabase,
+    addNewMember,
     checkEmailExist,
     checkMemberToken,
     getRecentMember,
@@ -75,9 +76,10 @@ export const member = (app: Elysia) =>
                     tags: ["Member"]
                 }
             })
-            .post('/register', async ({error, payload: JWTInvitePayload, body, jwtInvite}) => {
+            .post('/register', async ({error, payload: JWTInvitePayload, body, request: {headers}}) => {
                 try {
-
+                    const token = headers.get("AuthorizationRegister")?.split(" ")[1]!;
+                    return await addNewMember(body, JWTInvitePayload, token);
                 } catch (e) {
                     return error(500, e)
                 }
