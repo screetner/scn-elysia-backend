@@ -13,6 +13,11 @@ export interface sendInviteToken {
     token: string;
 }
 
+export interface memberRegister {
+    username: string;
+    password: string;
+}
+
 export const memberInvitesBody = t.Object({
     defaultRoleId: t.String(),
     emails: t.Array(t.String()),
