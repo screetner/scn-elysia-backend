@@ -1,7 +1,13 @@
 import {Elysia} from "elysia";
-import {checkAccessToken} from "@/middleware/jwtRequire";
-import {memberInvitesBody, memberRecentQuery, sendInviteToken} from "@/models/member";
-import {addInviteToDatabase, checkEmailExist, getRecentMember, sendInviteEmail} from "@/routes/member/member-service";
+import {checkAccessToken, checkInviteToken} from "@/middleware/jwtRequire";
+import {memberInvitesBody, memberRecentQuery, memberRegisterBody, sendInviteToken} from "@/models/member";
+import {
+    addInviteToDatabase,
+    checkEmailExist,
+    checkMemberToken,
+    getRecentMember,
+    sendInviteEmail
+} from "@/routes/member/member-service";
 import {jwtInviteSetup} from "@/routes/auth/setup";
 
 export const member = (app: Elysia) =>
@@ -33,11 +39,8 @@ export const member = (app: Elysia) =>
                     const sendInviteTokens: sendInviteToken[] = [];
                     await Promise.all(body.emails.map(async email => {
                         const token = await jwtInvite.sign({ email, orgId: payload.orgId, roleId: body.defaultRoleId });
-                        console.log(token);
-                        console.log(email);
                         sendInviteTokens.push({ email, token });
                     }));
-                    console.log(sendInviteTokens);
 
                     await Promise.all([
                         addInviteToDatabase(payload.userId, payload.orgId, sendInviteTokens.map(e => e.token)),
@@ -53,5 +56,36 @@ export const member = (app: Elysia) =>
                 },
                 body: memberInvitesBody
             })
-    },
-    );
+        },
+    )
+        .group('member', (app) => {
+        return app
+            .use(checkInviteToken)
+            .get('/check', async ({error, payload, request: {headers}}) => {
+                try {
+                    const token = headers.get("AuthorizationRegister")?.split(" ")[1]!;
+                    await checkMemberToken(token);
+                    return payload;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    description: "Check invite token",
+                    tags: ["Member"]
+                }
+            })
+            .post('/register', async ({error, payload: JWTInvitePayload, body, jwtInvite}) => {
+                try {
+
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    description: "Register member with invite token",
+                    tags: ["Member"]
+                },
+                body: memberRegisterBody
+            })
+    },);

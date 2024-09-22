@@ -53,3 +53,15 @@ export async function sendInviteEmail(sendInviteTokens: memberModel.sendInviteTo
         })
     );
 }
+
+export async function checkMemberToken(token: string) {
+    const [invite] = await db.select({
+        token: schemas.inviteTable.token,
+    })
+        .from(schemas.inviteTable)
+        .where(eq(schemas.inviteTable.token, token));
+
+    if (!invite) {
+        throw new Error(`Invite token ${token} not found`);
+    }
+}
