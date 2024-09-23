@@ -1,11 +1,9 @@
 import {Elysia} from "elysia";
-import {checkAccessToken, checkInviteToken} from "@/middleware/jwtRequire";
-import {memberInvitesBody, memberRecentQuery, memberRegisterBody, sendInviteToken} from "@/models/member";
+import {checkAccessToken} from "@/middleware/jwtRequire";
+import {memberInvitesBody, memberRecentQuery, sendInviteToken} from "@/models/member";
 import {
     addInviteToDatabase,
-    addNewMember,
     checkEmailExist,
-    checkMemberToken,
     getRecentMember,
     sendInviteEmail
 } from "@/routes/member/member-service";
@@ -58,36 +56,4 @@ export const member = (app: Elysia) =>
                 body: memberInvitesBody
             })
         },
-    )
-        .group('member', (app) => {
-        return app
-            .use(checkInviteToken)
-            .get('/check', async ({error, payload, request: {headers}}) => {
-                try {
-                    const token = headers.get("AuthorizationRegister")?.split(" ")[1]!;
-                    await checkMemberToken(token);
-                    return payload;
-                } catch (e) {
-                    return error(500, e)
-                }
-            }, {
-                detail: {
-                    description: "Check invite token",
-                    tags: ["Member"]
-                }
-            })
-            .post('/register', async ({error, payload: JWTInvitePayload, body, request: {headers}}) => {
-                try {
-                    const token = headers.get("AuthorizationRegister")?.split(" ")[1]!;
-                    return await addNewMember(body, JWTInvitePayload, token);
-                } catch (e) {
-                    return error(500, e)
-                }
-            }, {
-                detail: {
-                    description: "Register member with invite token",
-                    tags: ["Member"]
-                },
-                body: memberRegisterBody
-            })
-    },);
+    );

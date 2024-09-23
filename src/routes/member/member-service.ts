@@ -4,7 +4,6 @@ import {desc, eq, inArray} from "drizzle-orm";
 import * as memberModel from "@/models/member";
 import sendEmailMessage from "@/libs/emailform";
 import {subject} from "@/models/member";
-import {JWTInvitePayload} from "@/models/auth";
 
 export async function getRecentMember(organizationId: string, limit: number): Promise<memberModel.getRecentMember[]> {
     return db.select({
@@ -53,34 +52,4 @@ export async function sendInviteEmail(sendInviteTokens: memberModel.sendInviteTo
             await sendEmailMessage(sendInviteToken.email, subject, url, sendInviteToken.token);
         })
     );
-}
-
-export async function checkMemberToken(token: string) {
-    const [invite] = await db.select({
-        token: schemas.inviteTable.token,
-    })
-        .from(schemas.inviteTable)
-        .where(eq(schemas.inviteTable.token, token));
-
-    if (!invite) {
-        throw new Error(`Invite token ${token} not found`);
-    }
-}
-
-export async function addNewMember(memberData: memberModel.memberRegister, jwtInvite: JWTInvitePayload, token: string) {
-    const [userId] = await db.insert(schemas.userTable)
-        .values({
-            username: memberData.username,
-            password: memberData.password,
-            email: jwtInvite.email,
-            roleId: jwtInvite.roleId,
-        }).returning({userId: schemas.userTable.userId});
-
-    await db.update(schemas.inviteTable)
-        .set({
-            activatedAt: new Date()
-        })
-        .where(eq(schemas.inviteTable.token, token));
-
-    return userId;
 }
