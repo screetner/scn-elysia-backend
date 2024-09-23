@@ -23,7 +23,7 @@ new Elysia()
             },
             security: [{ bearerAuth: [] }],
         },
-        provider: 'swagger-ui'
+        provider: 'scalar'
     }))
     .use(routes.auth)
     .use(routes.geolocation)
