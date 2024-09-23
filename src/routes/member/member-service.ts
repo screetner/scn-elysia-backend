@@ -48,7 +48,7 @@ export async function addInviteToDatabase(userId: string, organizationId: string
 export async function sendInviteEmail(sendInviteTokens: memberModel.sendInviteToken[]) {
     await Promise.all(
         sendInviteTokens.map(async sendInviteToken => {
-            const url = process.env.FN_URL! + `/${sendInviteToken.token}`;
+            const url = process.env.FN_URL! + `/register?token=${sendInviteToken.token}`;
             await sendEmailMessage(sendInviteToken.email, subject, url, sendInviteToken.token);
         })
     );

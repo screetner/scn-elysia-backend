@@ -18,19 +18,23 @@ export async function checkMemberToken(token: string) {
 }
 
 export async function addNewMember(memberData: registerModel.register, jwtInvite: JWTInvitePayload, token: string) {
-    const [userId] = await db.insert(schemas.userTable)
-        .values({
-            username: memberData.username,
-            password: await password.hash(memberData.password, "bcrypt"),
-            email: jwtInvite.email,
-            roleId: jwtInvite.roleId,
-        }).returning({userId: schemas.userTable.userId});
+    try {
+        const [userId] = await db.insert(schemas.userTable)
+            .values({
+                username: memberData.username,
+                password: await password.hash(memberData.password, "bcrypt"),
+                email: jwtInvite.email,
+                roleId: jwtInvite.roleId,
+            }).returning({userId: schemas.userTable.userId});
 
-    await db.update(schemas.inviteTable)
-        .set({
-            activatedAt: new Date()
-        })
-        .where(eq(schemas.inviteTable.token, token));
+        await db.update(schemas.inviteTable)
+            .set({
+                activatedAt: new Date()
+            })
+            .where(eq(schemas.inviteTable.token, token));
 
-    return userId;
+        return userId;
+    } catch (e) {
+        throw Error('This email is already registered');
+    }
 }
