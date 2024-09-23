@@ -18,7 +18,7 @@ export const register = (app: Elysia) =>
             }, {
                 detail: {
                     description: "Check invite token",
-                    tags: ["Member"]
+                    tags: ["Register"]
                 }
             }).post('/', async ({error, body, payload, request: {headers}}) => {
                 try{
@@ -30,7 +30,7 @@ export const register = (app: Elysia) =>
             }, {
                 detail: {
                     description: "Register new member",
-                    tags: ["Member"]
+                    tags: ["Register"]
                 },
                 body: RegisterBody
             });
