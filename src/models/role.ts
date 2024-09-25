@@ -1,4 +1,4 @@
-import {t} from 'elysia'
+import {Static, t} from 'elysia'
 
 export interface roleInOrg {
     roleId: string,
@@ -15,18 +15,6 @@ export interface roleMemberInformation {
 export interface roleInformation {
     roleId: string,
     roleName: string,
-}
-
-export interface rolePermission {
-    mobile: {
-        access: boolean,
-        videosProcess: boolean,
-    },
-    web: {
-        access: boolean,
-        manageGeometry: boolean,
-        roleSetting: boolean,
-    },
 }
 
 export interface roleManagement {
@@ -54,7 +42,15 @@ export const DEFAULT_PERMISSION: rolePermission = {
     web: {
         access: true,
         manageGeometry: false,
-        roleSetting: false,
+        member: {
+            invite: false,
+        },
+        role: {
+            create: false,
+            delete: false,
+            managePermission: false,
+            manageMember: false,
+        }
     },
 }
 
@@ -76,17 +72,29 @@ export const UpdateRoleName = t.Object({
     newName : t.String(),
 })
 
-export const UpdateRolePermission = t.Object({
-    roleId : t.String(),
-    permission : t.Object({
-        mobile : t.Object({
-            access : t.Boolean(),
-            videosProcess : t.Boolean(),
+export const permission = t.Object({
+    mobile : t.Object({
+        access : t.Boolean(),
+        videosProcess : t.Boolean(),
+    }),
+    web : t.Object({
+        access : t.Boolean(),
+        manageGeometry : t.Boolean(),
+        member : t.Object({
+            invite : t.Boolean(),
         }),
-        web : t.Object({
-            access : t.Boolean(),
-            manageGeometry : t.Boolean(),
-            roleSetting : t.Boolean(),
+        role : t.Object({
+            create : t.Boolean(),
+            delete : t.Boolean(),
+            managePermission : t.Boolean(),
+            manageMember : t.Boolean(),
         })
     })
+})
+
+export type rolePermission = Static<typeof permission>;
+
+export const UpdateRolePermission = t.Object({
+    roleId : t.String(),
+    permission : permission
 })

@@ -1,6 +1,8 @@
 import {Elysia} from "elysia";
 import {jwtAccessSetup, jwtInviteSetup, jwtRefreshSetup, jwtTusdSetup} from "@/routes/auth/setup";
 import {JWTInvitePayload, JWTPayload} from "@/models/auth";
+import {checkPermissions} from "@/middleware/checkPermissions";
+import {PermissionCheck} from "@/middleware/permissionMacro";
 
 // @ts-ignore
 const checkImproperToken = async (token: string | undefined, tokenType: string, set, jwtVerifier) => {
@@ -36,7 +38,25 @@ export const checkAccessToken = (app: Elysia) =>
         .derive(async function handler({jwtAccess, set, request: {headers}}) {
             const token = headers.get("Authorization")?.split(" ")[1];
             return checkImproperToken(token, "Access token", set, jwtAccess);
-        });
+        })
+        .macro(({onBeforeHandle}) => {
+            return {
+                checkPermissions: (...permissionSets: PermissionCheck[]) => {
+                    onBeforeHandle(async ({error, payload,}) => {
+                        try {
+                            if (permissionSets.length === 0) return
+                            const hasPermission = checkPermissions(payload!, ...permissionSets);
+
+                            if (!hasPermission) {
+                                return error(401, "Not enough permission");
+                            }
+                        } catch (e) {
+                            return error(500, "Internal Server Error");
+                        }
+                    })
+                }
+            }
+        })
 
 export const checkRefreshToken = (app: Elysia) =>
     app.use(jwtRefreshSetup)
