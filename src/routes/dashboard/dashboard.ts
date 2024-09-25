@@ -21,10 +21,6 @@ export const dashboard = (app: Elysia) =>
                 detail: {
                     description: "Get member information for this organization",
                     tags: ["Dashboard"]
-                },
-                checkPermissions: {
-                    web: { access: true },
-                    mobile: { access: true}
                 }
             })
             .get('/invite', async ({error, payload}) => {

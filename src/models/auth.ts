@@ -1,5 +1,5 @@
 import {Static, t} from 'elysia'
-import {rolePermission} from "@/models/role";
+import {permission, rolePermission} from "@/models/role";
 
 
 export const LoginBody = t.Object({
@@ -16,17 +16,7 @@ export const JWTPayloadSchema = t.Object({
     username : t.String(),
     roleId : t.String(),
     roleName : t.String(),
-    abilityScope: t.Object({
-        mobile: t.Object({
-            access: t.Boolean(),
-            videosProcess: t.Boolean(),
-        }),
-        web: t.Object({
-            access: t.Boolean(),
-            manageGeometry: t.Boolean(),
-            roleSetting: t.Boolean(),
-        })
-    }),
+    abilityScope: permission,
     email : t.String(),
     orgId : t.String(),
     orgName : t.String(),
