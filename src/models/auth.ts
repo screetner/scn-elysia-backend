@@ -1,5 +1,5 @@
 import {Static, t} from 'elysia'
-import {permission, rolePermission} from "@/models/role";
+import {permission} from "@/models/role";
 
 
 export const LoginBody = t.Object({
@@ -20,18 +20,10 @@ export const JWTPayloadSchema = t.Object({
     email : t.String(),
     orgId : t.String(),
     orgName : t.String(),
+    isOwner : t.Boolean(),
 })
 
-export interface JWTPayload {
-    userId: string,
-    username: string,
-    roleId: string,
-    roleName: string,
-    abilityScope: rolePermission,
-    email : string,
-    orgId : string,
-    orgName : string,
-}
+export type JWTPayload = Static<typeof JWTPayloadSchema>
 
 export interface JWTInvitePayload {
     email: string,

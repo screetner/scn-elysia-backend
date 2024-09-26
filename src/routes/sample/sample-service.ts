@@ -43,10 +43,11 @@ export const createMockData = async () => {
 };
 
 export const clearMockData = async () => {
+    const invite = await db.delete(schemas.inviteTable)
     const asset = await db.delete(schemas.assetTable)
     const assetType = await db.delete(schemas.assetTypeTable)
     const user = await db.delete(schemas.userTable)
     const role = await db.delete(schemas.roleTable)
     const org = await db.delete(schemas.organizationTable)
-    return {user, role, org, assetType, asset}
+    return {user, role, org, assetType, asset, invite}
 }
