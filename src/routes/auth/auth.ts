@@ -22,6 +22,8 @@ export const auth = (app: Elysia) =>
 
                     if(!isCorrect) return error(401,"Unauthorized")
 
+                    const isOwner = user.role.organization.name === process.env.OWNER_ORGANIZATION_NAME!;
+
                     const payload : JWTPayload = {
                         userId :user.userId,
                         username : user.username,
@@ -31,6 +33,7 @@ export const auth = (app: Elysia) =>
                         email : user.email,
                         orgId : user.role.organizationId,
                         orgName : user.role.organization.name,
+                        isOwner,
                     }
 
                     const result = {
