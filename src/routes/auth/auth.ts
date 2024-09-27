@@ -47,7 +47,8 @@ export const auth = (app: Elysia) =>
                             refreshToken: await jwtRefresh.sign(payload),
                             refreshTokenExpiry : accessTokenExpire(60*60*24*7),
                             tusdToken: await jwtTusd.sign(payload),
-                            tusdTokenExpiry : accessTokenExpire(60*60*24*7)
+                            tusdTokenExpiry : accessTokenExpire(60*60*24*7),
+                            isOwner,
                         }
                     };
 
