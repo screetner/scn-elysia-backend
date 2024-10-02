@@ -33,6 +33,7 @@ export interface updateRoleName {
 }
 
 export const DEFAULT_ROLE = 'Default';
+export const ADMIN_ROLE = 'Admin';
 export const NEW_ROLE = 'New Role';
 export const DEFAULT_PERMISSION: rolePermission = {
     mobile: {
