@@ -23,7 +23,7 @@ new Elysia()
             },
             security: [{ bearerAuth: [] }],
         },
-        provider: 'swagger-ui'
+        // provider: 'swagger-ui'
     }))
     .use(routes.auth)
     .use(routes.geolocation)
@@ -35,6 +35,7 @@ new Elysia()
     .use(routes.member)
     .use(routes.dashboard)
     .use(routes.register)
+    .use(routes.organization)
     .get("/", () => "Hello Elysia")
     .listen(3000);
 
