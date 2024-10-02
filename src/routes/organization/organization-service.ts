@@ -3,6 +3,7 @@ import * as schemas from "@/database/schemas";
 import {eq} from "drizzle-orm";
 import {countDistinct} from "drizzle-orm/sql/functions/aggregate";
 import * as OrgModel from "@/models/organization";
+import {ADMIN_PERMISSION, ADMIN_ROLE, DEFAULT_PERMISSION, DEFAULT_ROLE} from "@/models/role";
 
 export async function getAllOrganization(): Promise<OrgModel.organizationData[]> {
     return db.select({
@@ -19,4 +20,43 @@ export async function getAllOrganization(): Promise<OrgModel.organizationData[]>
             schemas.organizationTable.organizationId,
             schemas.organizationTable.name
         );
+}
+
+export async function createOrganization(name: string): Promise<OrgModel.createOrganizationResult> {
+    const [existingOrg] = await db.select({
+        orgId: schemas.organizationTable.organizationId
+    })
+        .from(schemas.organizationTable)
+        .where(eq(schemas.organizationTable.name, name));
+
+    if (existingOrg) {
+        throw new Error(`Organization with name ${name} already exists`);
+    }
+
+    const [org] =  await db.insert(schemas.organizationTable)
+        .values({name})
+        .returning({id: schemas.organizationTable.organizationId});
+
+    const [[defaultRole], [adminRole]] = await Promise.all([
+        db.insert(schemas.roleTable)
+            .values({
+                organizationId: org.id,
+                roleName: DEFAULT_ROLE,
+                abilityScope: DEFAULT_PERMISSION,
+            })
+            .returning({id: schemas.roleTable.roleId}),
+        db.insert(schemas.roleTable)
+            .values({
+                organizationId: org.id,
+                roleName: ADMIN_ROLE,
+                abilityScope: ADMIN_PERMISSION,
+            })
+            .returning({id: schemas.roleTable.roleId})
+    ]);
+
+    return {
+        orgId: org.id,
+        defaultRoleId: defaultRole.id,
+        adminRoleId: adminRole.id,
+    }
 }

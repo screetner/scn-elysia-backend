@@ -54,6 +54,25 @@ export const DEFAULT_PERMISSION: rolePermission = {
         }
     },
 }
+export const ADMIN_PERMISSION: rolePermission = {
+    mobile: {
+        access: true,
+        videosProcess: true,
+    },
+    web: {
+        access: true,
+        manageGeometry: true,
+        member: {
+            invite: true,
+        },
+        role: {
+            create: true,
+            delete: true,
+            managePermission: true,
+            manageMember: true,
+        }
+    },
+}
 
 export const RoleIdParams = t.Object({
     roleId : t.String()

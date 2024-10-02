@@ -53,3 +53,16 @@ export async function sendInviteEmail(sendInviteTokens: memberModel.sendInviteTo
         })
     );
 }
+
+// export async function generateAndSendInviteTokens(jwtInvite: Elysia ,emails: string[], orgId: string, roleId: string, senderId: string) {
+//     const sendInviteTokens: sendInviteToken[] = [];
+//     await Promise.all(emails.map(async email => {
+//         const token = await jwtInvite.sign({ email, orgId, roleId });
+//         sendInviteTokens.push({ email, token });
+//     }));
+//
+//     await Promise.all([
+//         addInviteToDatabase(senderId, orgId, sendInviteTokens.map(e => e.token)),
+//         sendInviteEmail(sendInviteTokens)
+//     ]);
+// }
