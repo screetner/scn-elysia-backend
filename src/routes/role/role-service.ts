@@ -140,6 +140,7 @@ export async function changeRoleName(roleId: string, roleName: string, organizat
             eq(schemas.roleTable.roleId, roleId),
             eq(schemas.roleTable.organizationId, organizationId),
             not(eq(schemas.roleTable.roleName, roleModel.DEFAULT_ROLE)),
+            not(eq(schemas.roleTable.roleName, roleModel.ADMIN_ROLE)),
         ));
 
     if (!role) {
