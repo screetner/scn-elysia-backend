@@ -3,6 +3,7 @@ import * as schemas from "@/database/schemas";
 import {and, count, eq, gte, lt} from "drizzle-orm";
 import {endOfMonth, startOfMonth, subMonths} from "date-fns";
 import * as dashboardModel from "@/models/dashboard";
+import {ADMIN_ROLE} from "@/models/role";
 
 export async function countMembers(organizationId: string): Promise<dashboardModel.memberInformation> {
     const currentDate = new Date();
@@ -60,6 +61,6 @@ export async function countInvites(organizationId: string): Promise<dashboardMod
 export async function countAdmins(organizationId: string): Promise<number> {
     return db.select({})
         .from(schemas.roleTable)
-        .where(and(eq(schemas.roleTable.organizationId, organizationId), eq(schemas.roleTable.roleName, 'Admin')))
+        .where(and(eq(schemas.roleTable.organizationId, organizationId), eq(schemas.roleTable.roleName, ADMIN_ROLE)))
         .then((res) => res.length);
 }

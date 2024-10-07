@@ -28,7 +28,7 @@ export async function checkEmailExist(emails: string[]): Promise<void> {
         .where(inArray(schemas.userTable.email, emails));
 
     if (existingEmails.length > 0) {
-        throw new Error(`The following emails already exist: ${existingEmails.map(e => e.email).join(", ")}`);
+        throw new Error(`These Emails already exist in other Org : ${existingEmails.map(e => e.email).join(", ")}`);
     }
 }
 
