@@ -11,6 +11,8 @@ COPY src src
 COPY tsconfig.json .
 
 USER node
+COPY --chown=node:node src ./src
+COPY --chown=node:node tsconfig.json ./
 
 CMD ["bun", "src/index.ts"]
 
