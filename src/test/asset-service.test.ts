@@ -2,7 +2,7 @@ import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
 import sinon from 'sinon';
 import {db} from "@/database/database";
 import * as schemas from '@/database/schemas'
-import {findAssetById} from "@/routes/assets/asset-services";
+import {findAssetById, findAssetsByOrgId} from "@/routes/assets/asset-services";
 import {eq} from "drizzle-orm";
 
 describe('findAssetById', () => {
@@ -51,5 +51,72 @@ describe('findAssetById', () => {
 
     expect(result2).toBeUndefined();
 
+  });
+});
+
+describe('findAssetsByOrgId', () => {
+  let selectStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    selectStub = sinon.stub(db, 'select').returns({
+      from: sinon.stub().returnsThis(),
+      innerJoin: sinon.stub().returnsThis(),
+      where: sinon.stub().returnsThis(),
+    });
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should return assets for the given organization ID', async () => {
+    const mockResponse = [
+      {
+        assetId: 'asset123',
+        geoCoordinate: [1, 2] as [number, number],
+        assetType: 'type123',
+        recordedUser: 'user123',
+        organizationName: 'org123',
+      },
+    ];
+    selectStub.returns({
+      from: sinon.stub().returns({
+        innerJoin: sinon.stub().returns({
+          innerJoin: sinon.stub().returns({
+            innerJoin: sinon.stub().returns({
+              innerJoin: sinon.stub().returns({
+                where: sinon.stub().resolves(mockResponse),
+              }),
+            }),
+          }),
+        }),
+      }),
+    });
+
+    const result = await findAssetsByOrgId('org123');
+
+    expect(result).toEqual(mockResponse);
+    sinon.assert.calledOnce(selectStub);
+  });
+
+  it('should return an empty array if no assets are found for the given organization ID', async () => {
+    selectStub.returns({
+      from: sinon.stub().returns({
+        innerJoin: sinon.stub().returns({
+          innerJoin: sinon.stub().returns({
+            innerJoin: sinon.stub().returns({
+              innerJoin: sinon.stub().returns({
+                where: sinon.stub().resolves([]),
+              }),
+            }),
+          }),
+        }),
+      }),
+    });
+
+    const result = await findAssetsByOrgId('org123');
+
+    expect(result).toEqual([]);
+    sinon.assert.calledOnce(selectStub);
   });
 });
