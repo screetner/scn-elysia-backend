@@ -21,9 +21,12 @@ export async function changePassword(userId: string, newPassword: string) {
         throw new Error("Password is same as old password");
     }
 
-    await db.update(schemas.userTable)
+    return db.update(schemas.userTable)
         .set({
             password: encryptedPassword
         })
-        .where(eq(schemas.userTable.userId, userId));
+        .where(eq(schemas.userTable.userId, userId))
+        .returning({
+            password: schemas.userTable.password
+        });
 }
