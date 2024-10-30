@@ -41,16 +41,17 @@ describe('changePassword', () => {
         sinon.assert.calledOnce(selectStub);
     });
 
+    const userData = {
+        userId: 'user123',
+        roleId: 'role123',
+        username: 'iAmUser',
+        email: 'email123',
+        password: 'hashedPassword',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    };
+
     it('should throw an error if new password is the same as the old one', async () => {
-        const userData = {
-            userId: 'user123',
-            roleId: 'role123',
-            username: 'iAmUser',
-            email: 'email123',
-            password: 'hashedPassword',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
         selectStub.returns({
             from: sinon.stub().returns({
                 where: sinon.stub().resolves([userData]),
@@ -65,11 +66,20 @@ describe('changePassword', () => {
     });
 
     it('should successfully change the password when conditions are met', async () => {
-        const userData = { password: 'hashedOldPassword' };
-        selectStub.resolves([userData]);
+        selectStub.returns({
+            from: sinon.stub().returns({
+                where: sinon.stub().resolves([userData]),
+            }),
+        });
         verifyStub.resolves(false);
         hashStub.resolves('newEncryptedPassword');
-        updateStub.resolves();
+        updateStub.returns({
+            set: sinon.stub().returns({
+                where: sinon.stub().returns({
+                    returning: sinon.stub().resolves([{ password: 'newEncryptedPassword' }]),
+                }),
+            }),
+        });
 
         await changePassword('user123', 'newPassword');
 
