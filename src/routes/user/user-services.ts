@@ -1,6 +1,6 @@
 import {db} from "@/database/database";
 import * as schemas from "@/database/schemas";
-import {eq, and} from "drizzle-orm";
+import {eq} from "drizzle-orm";
 import {password} from "bun";
 
 export async function changePassword(userId: string, newPassword: string) {
@@ -9,11 +9,11 @@ export async function changePassword(userId: string, newPassword: string) {
         password: schemas.userTable.password
     })
         .from(schemas.userTable)
-        .where(
-            and(
-                eq(schemas.userTable.userId, userId)
-            )
-        );
+        .where(eq(schemas.userTable.userId, userId));
+
+    if (!userData) {
+        throw new Error("User not found");
+    }
 
     const IsSamePassword = await Bun.password.verify(newPassword, userData.password);
 
