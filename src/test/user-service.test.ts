@@ -56,8 +56,8 @@ describe('changePassword', () => {
                 where: sinon.stub().resolves([userData]),
             }),
         });
-        verifyStub.onFirstCall().resolves(true); // First call for old password verification
-        verifyStub.onSecondCall().resolves(true); // Second call for new password verification
+        verifyStub.onFirstCall().resolves(true);
+        verifyStub.onSecondCall().resolves(true);
 
         expect(changePassword('user123', 'hashedPassword', 'oldPassword')).rejects.toThrow("Password is same as old password");
 
@@ -71,8 +71,8 @@ describe('changePassword', () => {
                 where: sinon.stub().resolves([userData]),
             }),
         });
-        verifyStub.onFirstCall().resolves(true); // First call for old password verification
-        verifyStub.onSecondCall().resolves(false); // Second call for new password verification
+        verifyStub.onFirstCall().resolves(true);
+        verifyStub.onSecondCall().resolves(false);
         hashStub.resolves('newEncryptedPassword');
 
         await changePassword('user123', 'newPassword', 'oldPassword');
