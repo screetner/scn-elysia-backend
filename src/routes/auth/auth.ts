@@ -7,14 +7,12 @@ import {JWTPayload, LoginBody} from "@/models/auth";
 import {CustomResponse} from "@/custom/Response";
 import {rolePermission} from "@/models/role";
 import sendLog from "@/libs/log";
-import {jwtAccessSetup, jwtRefreshSetup, jwtTusdSetup} from "@/routes/auth/setup";
+import {refreshToken} from "@/routes/auth/refreshToken";
 
 export const auth = (app: Elysia) =>
     app.group("auth", (app) => {
         return app
-            .use(jwtAccessSetup)
-            .use(jwtRefreshSetup)
-            .use(jwtTusdSetup)
+            .use(refreshToken)
             .post("/login", async ({body, error, jwtAccess, jwtRefresh, jwtTusd}) => {
                 try{
                     const user = await findUser(body)
@@ -24,7 +22,7 @@ export const auth = (app: Elysia) =>
                     const isCorrect = await Bun.password.verify(body.password, user.password)
 
                     if(!isCorrect) {
-                        await sendLog({
+                        sendLog({
                             userId: user.userId,
                             description: "Login",
                             status: false
@@ -63,7 +61,7 @@ export const auth = (app: Elysia) =>
                         }
                     };
 
-                    await sendLog({
+                    sendLog({
                         userId: user.userId,
                         description: "Login",
                         status: true
