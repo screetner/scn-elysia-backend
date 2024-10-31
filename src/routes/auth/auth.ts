@@ -22,7 +22,7 @@ export const auth = (app: Elysia) =>
                     const isCorrect = await Bun.password.verify(body.password, user.password)
 
                     if(!isCorrect) {
-                        await sendLog({
+                        sendLog({
                             userId: user.userId,
                             description: "Login",
                             status: false
@@ -61,7 +61,7 @@ export const auth = (app: Elysia) =>
                         }
                     };
 
-                    await sendLog({
+                    sendLog({
                         userId: user.userId,
                         description: "Login",
                         status: true
