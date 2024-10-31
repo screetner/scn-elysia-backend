@@ -1,5 +1,5 @@
 import {db} from "@/database/database";
-import {and, count, eq, inArray, like, not, notExists} from "drizzle-orm";
+import {and, count, eq, inArray, like, not} from "drizzle-orm";
 import * as schemas from "@/database/schemas";
 import * as roleModel from "@/models/role";
 
@@ -139,12 +139,14 @@ export async function changeRoleName(roleId: string, roleName: string, organizat
         .where(and(
             eq(schemas.roleTable.roleId, roleId),
             eq(schemas.roleTable.organizationId, organizationId),
-            not(eq(schemas.roleTable.roleName, roleModel.DEFAULT_ROLE)),
-            not(eq(schemas.roleTable.roleName, roleModel.ADMIN_ROLE)),
         ));
 
     if (!role) {
         throw new Error(`Role '${roleName}' not found in your organization`);
+    }
+
+    if (role.roleName === roleModel.DEFAULT_ROLE || role.roleName === roleModel.ADMIN_ROLE) {
+        throw new Error(`Cannot change the name of the role '${role.roleName}'`);
     }
 
     const [newName] = await db.update(schemas.roleTable)
@@ -170,15 +172,20 @@ export async function deleteRole(roleId: string, organizationId: string): Promis
         .where(and(
             eq(schemas.roleTable.roleId, roleId),
             eq(schemas.roleTable.organizationId, organizationId),
-            notExists(
-                db.select()
-                    .from(schemas.userTable)
-                    .where(eq(schemas.userTable.roleId, roleId))
-            ),
         ));
 
     if (!role) {
-        throw new Error(`Role with ID ${roleId} not found in organization ${organizationId} or has users assigned`);
+        throw new Error(`Role with ID ${roleId} not found in organization ${organizationId}`);
+    }
+
+    const usersInRole = await db.select({
+        userId: schemas.userTable.userId,
+    })
+        .from(schemas.userTable)
+        .where(eq(schemas.userTable.roleId, roleId));
+
+    if (usersInRole.length > 0) {
+        throw new Error(`Cannot delete role with ID ${roleId} because it has assigned users`);
     }
 
     await db.delete(schemas.roleTable)
