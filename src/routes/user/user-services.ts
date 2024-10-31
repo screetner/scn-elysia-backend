@@ -3,7 +3,7 @@ import * as schemas from "@/database/schemas";
 import {eq} from "drizzle-orm";
 import {password} from "bun";
 
-export async function changePassword(userId: string, newPassword: string) {
+export async function changePassword(userId: string, newPassword: string, oldPassword: string) {
     const encryptedPassword = await password.hash(newPassword, "bcrypt");
     const [userData] = await db.select({
         password: schemas.userTable.password
@@ -13,6 +13,12 @@ export async function changePassword(userId: string, newPassword: string) {
 
     if (!userData) {
         throw new Error("User not found");
+    }
+
+    const CorrectPassword = await Bun.password.verify(oldPassword, userData.password);
+
+    if(!CorrectPassword) {
+        throw new Error("Old password is incorrect");
     }
 
     const IsSamePassword = await Bun.password.verify(newPassword, userData.password);

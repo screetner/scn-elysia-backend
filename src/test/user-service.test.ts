@@ -2,7 +2,7 @@ import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
 import sinon from 'sinon';
 import { changePassword } from '@/routes/user/user-services';
 import { db } from "@/database/database";
-import {password} from "bun";
+import { password } from "bun";
 
 describe('changePassword', () => {
     let selectStub: sinon.SinonStub;
@@ -14,19 +14,18 @@ describe('changePassword', () => {
         selectStub = sinon.stub(db, 'select').returns({
             from: sinon.stub().returnsThis(),
             where: sinon.stub().returnsThis(),
-            and: sinon.stub().returnsThis(),
-            eq: sinon.stub().returnsThis(),
         });
-        updateStub = sinon.stub(db, 'update');
+        updateStub = sinon.stub(db, 'update').returns({
+            set: sinon.stub().returnsThis(),
+            where: sinon.stub().returnsThis(),
+            returning: sinon.stub().resolves([{ password: 'newEncryptedPassword' }]),
+        });
         hashStub = sinon.stub(password, 'hash');
         verifyStub = sinon.stub(Bun.password, 'verify');
     });
 
     afterEach(() => {
-        selectStub.restore();
-        updateStub.restore();
-        hashStub.restore();
-        verifyStub.restore();
+        sinon.restore();
     });
 
     it('should throw an error if user is not found', async () => {
@@ -36,7 +35,7 @@ describe('changePassword', () => {
             }),
         });
 
-        expect(changePassword('user123', 'newPassword')).rejects.toThrow("User not found");
+        expect(changePassword('user123', 'newPassword', 'oldPassword')).rejects.toThrow("User not found");
 
         sinon.assert.calledOnce(selectStub);
     });
@@ -57,11 +56,12 @@ describe('changePassword', () => {
                 where: sinon.stub().resolves([userData]),
             }),
         });
-        verifyStub.resolves(true);
+        verifyStub.onFirstCall().resolves(true); // First call for old password verification
+        verifyStub.onSecondCall().resolves(true); // Second call for new password verification
 
-        expect(changePassword('user123', 'hashedPassword')).rejects.toThrow("Password is same as old password");
+        expect(changePassword('user123', 'hashedPassword', 'oldPassword')).rejects.toThrow("Password is same as old password");
 
-        sinon.assert.calledOnce(verifyStub);
+        sinon.assert.calledTwice(verifyStub);
         sinon.assert.notCalled(updateStub);
     });
 
@@ -71,19 +71,13 @@ describe('changePassword', () => {
                 where: sinon.stub().resolves([userData]),
             }),
         });
-        verifyStub.resolves(false);
+        verifyStub.onFirstCall().resolves(true); // First call for old password verification
+        verifyStub.onSecondCall().resolves(false); // Second call for new password verification
         hashStub.resolves('newEncryptedPassword');
-        updateStub.returns({
-            set: sinon.stub().returns({
-                where: sinon.stub().returns({
-                    returning: sinon.stub().resolves([{ password: 'newEncryptedPassword' }]),
-                }),
-            }),
-        });
 
-        await changePassword('user123', 'newPassword');
+        await changePassword('user123', 'newPassword', 'oldPassword');
 
-        sinon.assert.calledOnce(verifyStub);
+        sinon.assert.calledTwice(verifyStub);
         sinon.assert.calledOnceWithExactly(hashStub, 'newPassword', 'bcrypt');
         sinon.assert.calledOnce(updateStub);
     });
