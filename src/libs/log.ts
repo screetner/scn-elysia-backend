@@ -13,7 +13,7 @@ export enum LogStatus {
 
 export default async function sendLog({userId, description, status}: logModel) {
     const type = status ? LogStatus.SUCCESS : LogStatus.FAILED;
-    const url = process.env.LOG_URL || "http://localhost:3001";
+    const url = process.env.SERVICE_LOG_URL || "http://localhost:3001";
     await axios.post(`${url}/logs`, {
         userId,
         description,
