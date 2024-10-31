@@ -21,7 +21,7 @@ export const user = (app: Elysia) =>
             })
             .patch('/change-password', async ({error, payload, body}) => {
                 try {
-                    await changePassword(payload.userId, body.newPassword);
+                    await changePassword(payload.userId, body.newPassword, body.oldPassword);
                 } catch (e) {
                     return error(500, e)
                 }
