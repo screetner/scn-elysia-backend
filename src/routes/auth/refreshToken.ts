@@ -8,7 +8,7 @@ export const refreshToken = new Elysia()
     .use(jwtAccessSetup)
     .use(jwtRefreshSetup)
     .use(jwtTusdSetup)
-    .get("/refresh", async ({jwtAccess,payload, jwtRefresh, jwtTusd}) => {
+    .get("/refresh", async ({jwtAccess, payload, jwtRefresh, jwtTusd}) => {
         const [accessToken, refreshToken, tusdToken] = await Promise.all([
             jwtAccess.sign(payload),
             jwtRefresh.sign(payload),

@@ -5,22 +5,35 @@ import {
 } from "./auth-services"
 import {JWTPayload, LoginBody} from "@/models/auth";
 import {CustomResponse} from "@/custom/Response";
-import {refreshToken} from "@/routes/auth/refreshToken";
 import {rolePermission} from "@/models/role";
+import sendLog from "@/libs/log";
+import {jwtAccessSetup, jwtRefreshSetup, jwtTusdSetup} from "@/routes/auth/setup";
 
 export const auth = (app: Elysia) =>
     app.group("auth", (app) => {
         return app
-            .use(refreshToken)
-            .post("/login", async ({body, error, jwtAccess, jwtRefresh, jwtTusd}) => {
+            .use(jwtAccessSetup)
+            .use(jwtRefreshSetup)
+            .use(jwtTusdSetup)
+            .post("/login", async ({body, error, jwtAccess, jwtRefresh, jwtTusd, request: {headers}}) => {
                 try{
+                    const ipAddress = headers.get('x-forwarded-for') ?? "undefined";
+
                     const user = await findUser(body)
 
                     if(!user) return error(401,"Unauthorized")
 
                     const isCorrect = await Bun.password.verify(body.password, user.password)
 
-                    if(!isCorrect) return error(401,"Unauthorized")
+                    if(!isCorrect) {
+                        sendLog({
+                            userId: user.userId,
+                            description: "Login",
+                            status: false
+                        });
+
+                        return error(401, "Unauthorized")
+                    }
 
                     const isOwner = user.role.organization.name === process.env.OWNER_ORGANIZATION_NAME!;
 
@@ -51,6 +64,12 @@ export const auth = (app: Elysia) =>
                             isOwner,
                         }
                     };
+
+                    sendLog({
+                        userId: user.userId,
+                        description: "Login",
+                        status: true
+                    });
 
                     return CustomResponse.ok(result).toStandardResponse()
 
