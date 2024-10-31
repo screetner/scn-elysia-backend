@@ -15,10 +15,8 @@ export const auth = (app: Elysia) =>
             .use(jwtAccessSetup)
             .use(jwtRefreshSetup)
             .use(jwtTusdSetup)
-            .post("/login", async ({body, error, jwtAccess, jwtRefresh, jwtTusd, request: {headers}}) => {
+            .post("/login", async ({body, error, jwtAccess, jwtRefresh, jwtTusd}) => {
                 try{
-                    const ipAddress = headers.get('x-forwarded-for') ?? "undefined";
-
                     const user = await findUser(body)
 
                     if(!user) return error(401,"Unauthorized")
@@ -26,7 +24,7 @@ export const auth = (app: Elysia) =>
                     const isCorrect = await Bun.password.verify(body.password, user.password)
 
                     if(!isCorrect) {
-                        sendLog({
+                        await sendLog({
                             userId: user.userId,
                             description: "Login",
                             status: false
@@ -65,7 +63,7 @@ export const auth = (app: Elysia) =>
                         }
                     };
 
-                    sendLog({
+                    await sendLog({
                         userId: user.userId,
                         description: "Login",
                         status: true
