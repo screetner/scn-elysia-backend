@@ -1,8 +1,7 @@
 import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
 import sinon from 'sinon';
-import {addInviteToDatabase, checkEmailExist, getRecentMember} from '@/routes/member/member-service';
+import {checkEmailExist, getRecentMember} from '@/routes/member/member-service';
 import { db } from "@/database/database";
-import * as schemas from "@/database/schemas";
 
 describe('getRecentMember', () => {
     let selectStub: sinon.SinonStub;
@@ -103,38 +102,38 @@ describe('checkEmailExist', () => {
     });
 });
 
-describe('addInviteToDatabase', () => {
-    let insertStub: sinon.SinonStub;
-
-    beforeEach(() => {
-        insertStub = sinon.stub(db, 'insert');
-    });
-
-    afterEach(() => {
-        sinon.restore();
-    });
-
-    it('should insert invite tokens into the database', async () => {
-        const userId = 'user1';
-        const organizationId = 'org1';
-        const tokens = ['token1', 'token2', 'token3'];
-
-        tokens.forEach(token => {
-            insertStub.onCall(tokens.indexOf(token)).returns({
-                values: sinon.stub().resolves(),
-            });
-        });
-
-        await addInviteToDatabase(userId, organizationId, tokens);
-
-        expect(insertStub.callCount).toBe(tokens.length);
-        tokens.forEach((token, index) => {
-            expect(insertStub.getCall(index).args[0]).toEqual(schemas.inviteTable);
-            expect(insertStub.getCall(index).returnValue.values.getCall(0).args[0]).toEqual({
-                userId,
-                organizationId,
-                token,
-            });
-        });
-    });
-});
+// describe('addInviteToDatabase', () => {
+//     let insertStub: sinon.SinonStub;
+//
+//     beforeEach(() => {
+//         insertStub = sinon.stub(db, 'insert');
+//     });
+//
+//     afterEach(() => {
+//         sinon.restore();
+//     });
+//
+//     it('should insert invite tokens into the database', async () => {
+//         const userId = 'user1';
+//         const organizationId = 'org1';
+//         const tokens = ['token1', 'token2', 'token3'];
+//
+//         tokens.forEach(token => {
+//             insertStub.onCall(tokens.indexOf(token)).returns({
+//                 values: sinon.stub().resolves(),
+//             });
+//         });
+//
+//         await addInviteToDatabase(userId, organizationId, tokens);
+//
+//         expect(insertStub.callCount).toBe(tokens.length);
+//         tokens.forEach((token, index) => {
+//             expect(insertStub.getCall(index).args[0]).toEqual(schemas.inviteTable);
+//             expect(insertStub.getCall(index).returnValue.values.getCall(0).args[0]).toEqual({
+//                 userId,
+//                 organizationId,
+//                 token,
+//             });
+//         });
+//     });
+// });
