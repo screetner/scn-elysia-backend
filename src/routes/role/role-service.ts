@@ -207,8 +207,14 @@ export async function createRole(organizationId: string): Promise<roleModel.role
         ));
 
     if (existingRoles.length > 0) {
-        const suffix = existingRoles.length;
-        roleName = `${roleModel.NEW_ROLE} ${suffix}`;
+        const suffixes = existingRoles
+            .map(role => {
+                const match = role.roleName.match(/(\d+)$/);
+                return match ? parseInt(match[0]) : 0;
+            });
+
+        const maxSuffix = Math.max(...suffixes);
+        roleName = `${roleModel.NEW_ROLE} ${maxSuffix + 1}`;
     }
 
     const [newRole] = await db.insert(schemas.roleTable)
