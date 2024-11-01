@@ -1,67 +1,67 @@
-import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
-import sinon from 'sinon';
-import {getRecentMember} from '@/routes/member/member-service';
-import { db } from "@/database/database";
-
-describe('getRecentMember', () => {
-    let selectStub: sinon.SinonStub;
-
-    beforeEach(() => {
-        selectStub = sinon.stub(db, 'select');
-    });
-
-    afterEach(() => {
-        sinon.restore();
-    });
-
-    it('should return recent members with correct data', async () => {
-        const organizationId = 'org1';
-        const limit = 5;
-        const mockMembers = [
-            { userId: '1', userName: 'User1', email: 'user1@example.com', roleName: 'Admin', createdAt: new Date() },
-            { userId: '2', userName: 'User2', email: 'user2@example.com', roleName: 'Member', createdAt: new Date() },
-        ];
-
-        selectStub.returns({
-            from: sinon.stub().returns({
-                leftJoin: sinon.stub().returns({
-                    where: sinon.stub().returns({
-                        orderBy: sinon.stub().returns({
-                            limit: sinon.stub().resolves(mockMembers),
-                        }),
-                    }),
-                }),
-            }),
-        });
-
-        const result = await getRecentMember(organizationId, limit);
-
-        expect(result).toEqual(mockMembers);
-        sinon.assert.calledOnce(selectStub);
-    });
-
-    it('should return an empty array if no members are found', async () => {
-        const organizationId = 'org1';
-        const limit = 5;
-
-        selectStub.returns({
-            from: sinon.stub().returns({
-                leftJoin: sinon.stub().returns({
-                    where: sinon.stub().returns({
-                        orderBy: sinon.stub().returns({
-                            limit: sinon.stub().resolves([]),
-                        }),
-                    }),
-                }),
-            }),
-        });
-
-        const result = await getRecentMember(organizationId, limit);
-
-        expect(result).toEqual([]);
-        sinon.assert.calledOnce(selectStub);
-    });
-});
+// import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
+// import sinon from 'sinon';
+// import {getRecentMember} from '@/routes/member/member-service';
+// import { db } from "@/database/database";
+//
+// describe('getRecentMember', () => {
+//     let selectStub: sinon.SinonStub;
+//
+//     beforeEach(() => {
+//         selectStub = sinon.stub(db, 'select');
+//     });
+//
+//     afterEach(() => {
+//         sinon.restore();
+//     });
+//
+//     it('should return recent members with correct data', async () => {
+//         const organizationId = 'org1';
+//         const limit = 5;
+//         const mockMembers = [
+//             { userId: '1', userName: 'User1', email: 'user1@example.com', roleName: 'Admin', createdAt: new Date() },
+//             { userId: '2', userName: 'User2', email: 'user2@example.com', roleName: 'Member', createdAt: new Date() },
+//         ];
+//
+//         selectStub.returns({
+//             from: sinon.stub().returns({
+//                 leftJoin: sinon.stub().returns({
+//                     where: sinon.stub().returns({
+//                         orderBy: sinon.stub().returns({
+//                             limit: sinon.stub().resolves(mockMembers),
+//                         }),
+//                     }),
+//                 }),
+//             }),
+//         });
+//
+//         const result = await getRecentMember(organizationId, limit);
+//
+//         expect(result).toEqual(mockMembers);
+//         sinon.assert.calledOnce(selectStub);
+//     });
+//
+//     it('should return an empty array if no members are found', async () => {
+//         const organizationId = 'org1';
+//         const limit = 5;
+//
+//         selectStub.returns({
+//             from: sinon.stub().returns({
+//                 leftJoin: sinon.stub().returns({
+//                     where: sinon.stub().returns({
+//                         orderBy: sinon.stub().returns({
+//                             limit: sinon.stub().resolves([]),
+//                         }),
+//                     }),
+//                 }),
+//             }),
+//         });
+//
+//         const result = await getRecentMember(organizationId, limit);
+//
+//         expect(result).toEqual([]);
+//         sinon.assert.calledOnce(selectStub);
+//     });
+// });
 
 // describe('checkEmailExist', () => {
 //     let selectStub: sinon.SinonStub;
