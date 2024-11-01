@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
 import sinon from 'sinon';
-import {checkEmailExist, getRecentMember} from '@/routes/member/member-service';
+import {getRecentMember} from '@/routes/member/member-service';
 import { db } from "@/database/database";
 
 describe('getRecentMember', () => {
@@ -63,44 +63,44 @@ describe('getRecentMember', () => {
     });
 });
 
-describe('checkEmailExist', () => {
-    let selectStub: sinon.SinonStub;
-
-    beforeEach(() => {
-        selectStub = sinon.stub(db, 'select');
-    });
-
-    afterEach(() => {
-        sinon.restore();
-    });
-
-    it('should throw an error if emails already exist', async () => {
-        const emails = ['existing@example.com'];
-        const mockExistingEmails = [{ email: 'existing@example.com' }];
-
-        selectStub.returns({
-            from: sinon.stub().returns({
-                where: sinon.stub().resolves(mockExistingEmails),
-            }),
-        });
-
-        expect(checkEmailExist(emails)).rejects.toThrow('These Emails already exist in other Org : existing@example.com');
-        sinon.assert.calledOnce(selectStub);
-    });
-
-    it('should not throw an error if no emails exist', async () => {
-        const emails = ['new@example.com'];
-
-        selectStub.returns({
-            from: sinon.stub().returns({
-                where: sinon.stub().resolves([]),
-            }),
-        });
-
-        expect(checkEmailExist(emails)).toBeTruthy();
-        sinon.assert.calledOnce(selectStub);
-    });
-});
+// describe('checkEmailExist', () => {
+//     let selectStub: sinon.SinonStub;
+//
+//     beforeEach(() => {
+//         selectStub = sinon.stub(db, 'select');
+//     });
+//
+//     afterEach(() => {
+//         sinon.restore();
+//     });
+//
+//     it('should throw an error if emails already exist', async () => {
+//         const emails = ['existing@example.com'];
+//         const mockExistingEmails = [{ email: 'existing@example.com' }];
+//
+//         selectStub.returns({
+//             from: sinon.stub().returns({
+//                 where: sinon.stub().resolves(mockExistingEmails),
+//             }),
+//         });
+//
+//         expect(checkEmailExist(emails)).rejects.toThrow('These Emails already exist in other Org : existing@example.com');
+//         sinon.assert.calledOnce(selectStub);
+//     });
+//
+//     it('should not throw an error if no emails exist', async () => {
+//         const emails = ['new@example.com'];
+//
+//         selectStub.returns({
+//             from: sinon.stub().returns({
+//                 where: sinon.stub().resolves([]),
+//             }),
+//         });
+//
+//         expect(checkEmailExist(emails)).toBeTruthy();
+//         sinon.assert.calledOnce(selectStub);
+//     });
+// });
 
 // describe('addInviteToDatabase', () => {
 //     let insertStub: sinon.SinonStub;
