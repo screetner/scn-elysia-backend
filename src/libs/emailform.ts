@@ -1,7 +1,7 @@
 import { EmailMessage } from "@azure/communication-email";
 import client from "@/libs/emailclient";
 
-const htmlContent = (signupLink: string, token: string) => `
+const htmlContent = (signupLink: string, token: string): string => `
     <html lang="en">
         <head>
             <meta charset="UTF-8">
@@ -28,7 +28,6 @@ const htmlContent = (signupLink: string, token: string) => `
     </html>
 `;
 
-
 function createEmailMessage(recipientEmail: string, subjectContent: string, signupLink: string, token: string): EmailMessage {
     return {
         sender: "DoNotReply@screetner.studio",
@@ -42,7 +41,7 @@ function createEmailMessage(recipientEmail: string, subjectContent: string, sign
     };
 }
 
-export default async function sendEmailMessage(recipientEmail: string, subjectContent: string, signupLink: string, token: string) {
+export default async function sendEmailMessage(recipientEmail: string, subjectContent: string, signupLink: string, token: string): Promise<void> {
     const emailMessage = createEmailMessage(recipientEmail, subjectContent, signupLink, token);
     await client.send(emailMessage);
 }
