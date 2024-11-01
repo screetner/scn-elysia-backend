@@ -28,7 +28,6 @@ const htmlContent = (signupLink: string, token: string) => `
     </html>
 `;
 
-
 function createEmailMessage(recipientEmail: string, subjectContent: string, signupLink: string, token: string): EmailMessage {
     return {
         sender: "DoNotReply@screetner.studio",

@@ -19,6 +19,7 @@
     "express-winston": "^4.2.0",
     "logestic": "^1.2.3",
     "postgres": "^3.4.4",
+    "prettier": "^3.3.3",
     "sinon": "^19.0.2",
     "winston": "^3.13.1",
     "wkx": "^0.5.0"
