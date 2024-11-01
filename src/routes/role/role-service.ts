@@ -12,7 +12,8 @@ export async function getRoleOrganization(organizationId: string): Promise<roleM
         .from(schemas.roleTable)
         .leftJoin(schemas.userTable, eq(schemas.roleTable.roleId, schemas.userTable.roleId))
         .where(eq(schemas.roleTable.organizationId, organizationId))
-        .groupBy(schemas.roleTable.roleId);
+        .groupBy(schemas.roleTable.roleId)
+        .orderBy(schemas.roleTable.roleName);
 }
 
 export async function getUnassignedRole(organizationId: string): Promise<roleModel.roleMemberInformation[]> {
