@@ -48,6 +48,7 @@ export const auth = (app: Elysia) =>
                     const result = {
                         user: {
                             accessToken: await jwtAccess.sign(payload),
+                            userId: payload.userId,
                             username: payload.username,
                             email: payload.email,
                             roleName: payload.roleName,
