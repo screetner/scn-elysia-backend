@@ -51,7 +51,6 @@ export const member = (app: Elysia) =>
                     description: "Get recent member in organization search by orgId in limit",
                     tags: ["Member"]
                 },
-                query: memberRecentQuery
             })
             .post('/invite', async ({error, payload, body, jwtInvite}) => {
                 try {
