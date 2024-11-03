@@ -1,7 +1,16 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
-import {createOrganization, getAllOrganization} from "@/routes/organization/organization-service";
-import {createOrganizationBody, inviteOrganizationBody, organizationData} from "@/models/organization";
+import {
+    createOrganization,
+    getAllOrganization,
+    getOrganizationInformation
+} from "@/routes/organization/organization-service";
+import {
+    createOrganizationBody,
+    inviteOrganizationBody,
+    organizationData,
+    organizationInformation
+} from "@/models/organization";
 import {addInviteToDatabase, checkEmailExist, sendInviteEmail} from "@/routes/member/member-service";
 import {sendInviteToken} from "@/models/member";
 import {jwtInviteSetup} from "@/routes/auth/setup";
@@ -17,6 +26,26 @@ export const organization = (app: Elysia) =>
                     if (!payload.isOwner) return error(401, "Unauthorized")
 
                     const response: organizationData[] = await getAllOrganization()
+
+                    if (!response) return error(401, "Unauthorized")
+
+                    return response;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    description: "Get Organization Information",
+                    tags: ["Organization"]
+                }
+            })
+            .get('/information/:orgId', async ({error, params, payload}) => {
+                try {
+                    if (!payload.isOwner) return error(401, "Unauthorized")
+
+                    const orgId = params.orgId;
+
+                    const response: organizationInformation = await getOrganizationInformation(orgId)
 
                     if (!response) return error(401, "Unauthorized")
 

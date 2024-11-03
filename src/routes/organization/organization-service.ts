@@ -60,3 +60,16 @@ export async function createOrganization(name: string): Promise<OrgModel.createO
         adminRoleId: adminRole.id,
     }
 }
+
+export async function getOrganizationInformation(orgId: string): Promise<OrgModel.organizationInformation> {
+    const [organization] = await db.select({
+        name: schemas.organizationTable.name,
+        border: schemas.organizationTable.border,
+        createdAt: schemas.organizationTable.createdAt,
+        updatedAt: schemas.organizationTable.updatedAt,
+    })
+        .from(schemas.organizationTable)
+        .where(eq(schemas.organizationTable.organizationId, orgId));
+
+    return organization;
+}

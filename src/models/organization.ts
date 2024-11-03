@@ -13,6 +13,18 @@ export interface createOrganizationResult {
     adminRoleId: string,
 }
 
+export interface organizationInformation {
+    name: string,
+    border: borderData[] | null,
+    createdAt: Date | null,
+    updatedAt: Date | null
+}
+
+export interface borderData {
+    latitude: number,
+    longitude: number
+}
+
 export const createOrganizationBody = t.Object({
     adminEmail: t.Array(t.String()),
     orgName: t.String(),

@@ -2,7 +2,7 @@ import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
 import sinon from 'sinon';
 import {db} from "@/database/database";
 import * as schemas from '@/database/schemas'
-import {findAssetById, findAssetsByOrgId} from "@/routes/assets/asset-services";
+import {countAssetsByOrgId, findAssetById, findAssetsByOrgId} from "@/routes/assets/asset-services";
 import {eq} from "drizzle-orm";
 
 describe('findAssetById', () => {
@@ -117,6 +117,47 @@ describe('findAssetsByOrgId', () => {
     const result = await findAssetsByOrgId('org123');
 
     expect(result).toEqual([]);
+    sinon.assert.calledOnce(selectStub);
+  });
+});
+
+function setupSelectStub(mockResponse: any) {
+  const selectStub = sinon.stub(db, 'select');
+  const fromStub = sinon.stub().returnsThis();
+  const innerJoinStub = sinon.stub().returnsThis();
+  const whereStub = sinon.stub().resolves(mockResponse);
+
+  selectStub.returns({
+    from: fromStub,
+    innerJoin: innerJoinStub,
+    where: whereStub,
+  });
+
+  return selectStub;
+}
+
+describe('countAssetsByOrgId', () => {
+  let selectStub: sinon.SinonStub;
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should return the total number of assets for the given organization ID', async () => {
+    const mockCount = [{ total: 5 }];
+    selectStub = setupSelectStub(mockCount);
+
+    const result = await countAssetsByOrgId('org123');
+    expect(result).toEqual(mockCount);
+    sinon.assert.calledOnce(selectStub);
+  });
+
+  it('should return zero if no assets are found for the given organization ID', async () => {
+    const mockCount = [{ total: 0 }];
+    selectStub = setupSelectStub(mockCount);
+
+    const result = await countAssetsByOrgId('org123');
+    expect(result).toEqual(mockCount);
     sinon.assert.calledOnce(selectStub);
   });
 });

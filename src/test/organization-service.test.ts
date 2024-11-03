@@ -1,6 +1,10 @@
 import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
 import sinon from 'sinon';
-import {createOrganization, getAllOrganization} from '@/routes/organization/organization-service';
+import {
+    createOrganization,
+    getAllOrganization,
+    getOrganizationInformation
+} from '@/routes/organization/organization-service';
 import { db } from "@/database/database";
 
 describe('getAllOrganization', () => {
@@ -129,5 +133,47 @@ describe('createOrganization', () => {
 
         sinon.assert.calledOnce(selectStub);
         sinon.assert.notCalled(insertStub);
+    });
+});
+
+describe('getOrganizationInformation', () => {
+    let selectStub: sinon.SinonStub;
+
+    beforeEach(() => {
+        selectStub = sinon.stub(db, 'select');
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should return organization information for the given organization ID', async () => {
+        const mockOrganization = {
+            name: 'Test Organization',
+            border: [{ latitude: 40.7128, longitude: -74.0060 }],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+        selectStub.returns({
+            from: sinon.stub().returns({
+                where: sinon.stub().resolves([mockOrganization]),
+            }),
+        });
+
+        const result = await getOrganizationInformation('org123');
+        expect(result).toEqual(mockOrganization);
+        sinon.assert.calledOnce(selectStub);
+    });
+
+    it('should return undefined if no organization is found for the given organization ID', async () => {
+        selectStub.returns({
+            from: sinon.stub().returns({
+                where: sinon.stub().resolves([]),
+            }),
+        });
+
+        const result = await getOrganizationInformation('org123');
+        expect(result).toBeUndefined();
+        sinon.assert.calledOnce(selectStub);
     });
 });
