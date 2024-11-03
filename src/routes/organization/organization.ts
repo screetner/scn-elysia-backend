@@ -1,10 +1,11 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
 import {createOrganization, getAllOrganization} from "@/routes/organization/organization-service";
-import {createOrganizationBody, organizationData} from "@/models/organization";
+import {createOrganizationBody, inviteOrganizationBody, organizationData} from "@/models/organization";
 import {addInviteToDatabase, checkEmailExist, sendInviteEmail} from "@/routes/member/member-service";
 import {sendInviteToken} from "@/models/member";
 import {jwtInviteSetup} from "@/routes/auth/setup";
+import {getAdminId} from "@/routes/role/role-service";
 
 export const organization = (app: Elysia) =>
     app.group("organization", (app) => {
@@ -55,6 +56,34 @@ export const organization = (app: Elysia) =>
                     tags: ["Organization"]
                 },
                 body: createOrganizationBody
+            })
+            .post('/invite', async ({error, payload, body, jwtInvite}) => {
+                try {
+                    if (!payload.isOwner) return error(401, "Unauthorized")
+
+                    await checkEmailExist(body.adminEmail);
+
+                    const adminId = await getAdminId(body.orgId);
+
+                    const sendInviteTokens: sendInviteToken[] = [];
+                    await Promise.all(body.adminEmail.map(async email => {
+                        const token = await jwtInvite.sign({ email, orgId: payload.orgId, roleId: adminId });
+                        sendInviteTokens.push({ email, token });
+                    }));
+
+                    await Promise.all([
+                        addInviteToDatabase(payload.userId, payload.orgId, sendInviteTokens.map(e => e.token)),
+                        sendInviteEmail(sendInviteTokens)
+                    ]);
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    description: "Invite member to organization",
+                    tags: ["Organization"]
+                },
+                body: inviteOrganizationBody
             })
     },
     );

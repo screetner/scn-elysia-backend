@@ -17,3 +17,8 @@ export const createOrganizationBody = t.Object({
     adminEmail: t.Array(t.String()),
     orgName: t.String(),
 });
+
+export const inviteOrganizationBody = t.Object({
+    adminEmail: t.Array(t.String()),
+    orgId: t.String(),
+});
