@@ -34,3 +34,5 @@ export const inviteOrganizationBody = t.Object({
     adminEmail: t.Array(t.String()),
     orgId: t.String(),
 });
+
+export const OWNER_ORGANIZATION_NAME = 'screetner';

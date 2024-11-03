@@ -1,9 +1,10 @@
 import {db} from "@/database/database";
 import * as schemas from "@/database/schemas";
-import {eq} from "drizzle-orm";
+import {eq, not} from "drizzle-orm";
 import {countDistinct} from "drizzle-orm/sql/functions/aggregate";
 import * as OrgModel from "@/models/organization";
 import {ADMIN_PERMISSION, ADMIN_ROLE, DEFAULT_PERMISSION, DEFAULT_ROLE} from "@/models/role";
+import {OWNER_ORGANIZATION_NAME} from "@/models/organization";
 
 export async function getAllOrganization(): Promise<OrgModel.organizationData[]> {
     return db.select({
@@ -16,6 +17,7 @@ export async function getAllOrganization(): Promise<OrgModel.organizationData[]>
         .leftJoin(schemas.roleTable, eq(schemas.organizationTable.organizationId, schemas.roleTable.organizationId))
         .leftJoin(schemas.userTable, eq(schemas.roleTable.roleId, schemas.userTable.roleId))
         .leftJoin(schemas.assetTable, eq(schemas.userTable.userId, schemas.assetTable.recordedUser))
+        .where(not(eq(schemas.organizationTable.name, OWNER_ORGANIZATION_NAME)))
         .groupBy(
             schemas.organizationTable.organizationId,
             schemas.organizationTable.name
