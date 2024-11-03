@@ -8,6 +8,7 @@ import {
     sendInviteEmail
 } from "@/routes/member/member-service";
 import {jwtInviteSetup} from "@/routes/auth/setup";
+import * as memberModel from "@/models/member";
 
 export const member = (app: Elysia) =>
     app.group("member", (app) => {
@@ -16,7 +17,7 @@ export const member = (app: Elysia) =>
             .use(jwtInviteSetup)
             .get('/recent', async ({error, payload, query}) => {
                 try {
-                    const response = await getRecentMember(payload.orgId, query.limit as unknown as number);
+                    const response: memberModel.getRecentMember[] = await getRecentMember(payload.orgId, query.limit as unknown as number);
 
                     if (!response) return error(401, "Unauthorized");
 
