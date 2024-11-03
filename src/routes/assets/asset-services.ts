@@ -1,5 +1,5 @@
 import {db} from "@/database/database";
-import {eq, inArray} from "drizzle-orm";
+import {count, eq, inArray} from "drizzle-orm";
 import * as schemas from "@/database/schemas";
 import * as process from "node:process";
 import {
@@ -27,6 +27,18 @@ export async function findAssetsByOrgId(orgId: string) {
         assetType: schemas.assetTypeTable.assetType,
         recordedUser: schemas.userTable.username,
         organizationName: schemas.organizationTable.name,
+    })
+        .from(schemas.assetTable)
+        .innerJoin(schemas.userTable, eq(schemas.assetTable.recordedUser, schemas.userTable.userId))
+        .innerJoin(schemas.roleTable, eq(schemas.userTable.roleId, schemas.roleTable.roleId))
+        .innerJoin(schemas.organizationTable, eq(schemas.roleTable.organizationId, schemas.organizationTable.organizationId))
+        .innerJoin(schemas.assetTypeTable, eq(schemas.assetTable.assetTypeId, schemas.assetTypeTable.assetTypeId))
+        .where(eq(schemas.organizationTable.organizationId, orgId));
+}
+
+export async function countAssetsByOrgId(orgId: string) {
+    return db.select({
+        total: count(schemas.assetTable.assetId).as('total')
     })
         .from(schemas.assetTable)
         .innerJoin(schemas.userTable, eq(schemas.assetTable.recordedUser, schemas.userTable.userId))

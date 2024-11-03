@@ -2,7 +2,7 @@ import {t} from "elysia";
 
 export interface getRecentMember {
     userId: string;
-    userName: string;
+    username: string;
     email: string;
     roleName: string | null;
     createdAt: Date | null;

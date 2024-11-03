@@ -8,7 +8,7 @@ import {subject} from "@/models/member";
 export async function getRecentMember(organizationId: string, limit?: number): Promise<memberModel.getRecentMember[]> {
     const query = db.select({
         userId: schemas.userTable.userId,
-        userName: schemas.userTable.username,
+        username: schemas.userTable.username,
         email: schemas.userTable.email,
         roleName: schemas.roleTable.roleName,
         createdAt: schemas.userTable.createdAt,

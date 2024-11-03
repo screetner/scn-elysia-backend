@@ -1,16 +1,14 @@
 import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
 import {GetAssetByAssetId} from "@/models/asset";
-import {findAssetsByIds, findAssetsByOrgId} from "@/routes/assets/asset-services";
+import {countAssetsByOrgId, findAssetsByIds, findAssetsByOrgId} from "@/routes/assets/asset-services";
 import {getGeo} from "@/routes/geolocation/geolocation-service";
 
 export const asset = (app: Elysia) =>
     app.group("assets", (app) => {
         return app
             .use(checkAccessToken)
-            .get(
-                "/assetId/:assetId",
-                async ({error, params}) => {
+            .get("/assetId/:assetId",async ({error, params}) => {
                     const assetIds = params.assetId.split(",");
                     try {
                         return await findAssetsByIds(assetIds);
@@ -28,9 +26,7 @@ export const asset = (app: Elysia) =>
                     response: {},
                 }
             )
-            .get(
-                "/orgId",
-                async ({error, payload}) => {
+            .get("/orgId",async ({error, payload}) => {
                     try {
                         const [border, assets] = await Promise.all([
                             getGeo(payload.orgId!),
@@ -50,6 +46,28 @@ export const asset = (app: Elysia) =>
                         description: "Get Asset",
                         tags: ["Asset"],
                    },
+                    response: {},
+                }
+            )
+            .get("/org/:orgId",async ({error, params, payload}) => {
+                    try {
+                        if (!payload.isOwner) return error(401, "Unauthorized");
+
+                        const orgId = params.orgId;
+
+                        const [total] = await countAssetsByOrgId(orgId);
+
+                        return total;
+                    } catch (e) {
+                        return error(500, e);
+                    }
+                },
+                {
+                    detail: {
+                        title: "Get Asset",
+                        description: "Get Asset",
+                        tags: ["Asset"],
+                    },
                     response: {},
                 }
             )
