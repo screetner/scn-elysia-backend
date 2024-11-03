@@ -36,6 +36,24 @@ export const role = (app: Elysia) =>
                     tags: ["Role"]
                 }
             })
+            .get('/orgId', async ({error, payload}) => {
+                try {
+                    if (!payload.isOwner) return error(401, "Unauthorized")
+
+                    const response: roleInOrg[] = await getRoleOrganization(payload!.orgId)
+
+                    if (!response) return error(401, "Unauthorized")
+
+                    return response;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    description: "Get All Role Organization for Organization and Members foreach Role by OrganizationId",
+                    tags: ["Role"]
+                }
+            })
             .get('/option', async ({error, payload}) => {
                 try {
                     const response: roleInOrg[] = await getRoleOrganization(payload!.orgId)
