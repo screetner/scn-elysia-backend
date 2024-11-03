@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
 import sinon from 'sinon';
 import {
-    assignRole, changeRoleName, createRole, deleteRole,
+    assignRole, changeRoleName, createRole, deleteRole, getAdminId,
     getRoleInformation,
     getRoleOrganization,
     getUnassignedRole,
@@ -601,5 +601,41 @@ describe('updateRolePermission', () => {
 
         sinon.assert.calledOnce(selectStub);
         sinon.assert.notCalled(updateStub);
+    });
+});
+
+describe('getAdminId', () => {
+    let selectStub: sinon.SinonStub;
+
+    beforeEach(() => {
+        selectStub = sinon.stub(db, 'select');
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should return the admin role ID for the given organization ID', async () => {
+        const mockAdmin = { roleId: 'adminRoleId' };
+        selectStub.returns({
+            from: sinon.stub().returns({
+                where: sinon.stub().resolves([mockAdmin]),
+            }),
+        });
+
+        const result = await getAdminId('org123');
+        expect(result).toEqual('adminRoleId');
+        sinon.assert.calledOnce(selectStub);
+    });
+
+    it('should throw an error if no admin is found for the given organization ID', async () => {
+        selectStub.returns({
+            from: sinon.stub().returns({
+                where: sinon.stub().resolves([]),
+            }),
+        });
+
+        expect(getAdminId('org123')).rejects.toThrow("Admin not found in organization org123");
+        sinon.assert.calledOnce(selectStub);
     });
 });
