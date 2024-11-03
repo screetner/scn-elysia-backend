@@ -36,10 +36,10 @@ export const role = (app: Elysia) =>
                     tags: ["Role"]
                 }
             })
-            .get('/:orgId', async ({error, params, payload}) => {
+            .get('/org/:orgId', async ({error, params, payload}) => {
                 try {
                     const orgId = params.orgId;
-                    
+
                     if (!payload.isOwner) return error(401, "Unauthorized")
 
                     const response: roleInOrg[] = await getRoleOrganization(orgId)
