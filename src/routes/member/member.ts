@@ -32,6 +32,27 @@ export const member = (app: Elysia) =>
                 },
                 query: memberRecentQuery
             })
+            .get('/recent/org/:orgId', async ({error, params, payload}) => {
+                try {
+                    if (!payload.isOwner) return error(401, "Unauthorized");
+
+                    const orgId = params.orgId;
+
+                    const response: memberModel.getRecentMember[] = await getRecentMember(orgId);
+
+                    if (!response) return error(401, "Unauthorized");
+
+                    return response;
+                } catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    description: "Get recent member in organization search by orgId in limit",
+                    tags: ["Member"]
+                },
+                query: memberRecentQuery
+            })
             .post('/invite', async ({error, payload, body, jwtInvite}) => {
                 try {
                     await checkEmailExist(body.emails);

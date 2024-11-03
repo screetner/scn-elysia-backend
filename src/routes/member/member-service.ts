@@ -5,8 +5,8 @@ import * as memberModel from "@/models/member";
 import sendEmailMessage from "@/libs/emailform";
 import {subject} from "@/models/member";
 
-export async function getRecentMember(organizationId: string, limit: number): Promise<memberModel.getRecentMember[]> {
-    return db.select({
+export async function getRecentMember(organizationId: string, limit?: number): Promise<memberModel.getRecentMember[]> {
+    const query = db.select({
         userId: schemas.userTable.userId,
         userName: schemas.userTable.username,
         email: schemas.userTable.email,
@@ -16,8 +16,13 @@ export async function getRecentMember(organizationId: string, limit: number): Pr
         .from(schemas.userTable)
         .leftJoin(schemas.roleTable, eq(schemas.userTable.roleId, schemas.roleTable.roleId))
         .where(eq(schemas.roleTable.organizationId, organizationId))
-        .orderBy(desc(schemas.userTable.createdAt))
-        .limit(limit);
+        .orderBy(desc(schemas.userTable.createdAt));
+
+    if (limit !== undefined) {
+        query.limit(limit);
+    }
+
+    return query;
 }
 
 export async function checkEmailExist(emails: string[]): Promise<void> {
