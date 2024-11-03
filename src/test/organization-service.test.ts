@@ -39,7 +39,9 @@ describe('getAllOrganization', () => {
                 leftJoin: sinon.stub().returns({
                     leftJoin: sinon.stub().returns({
                         leftJoin: sinon.stub().returns({
-                            groupBy: sinon.stub().resolves(mockData),
+                            where: sinon.stub().returns({
+                                groupBy: sinon.stub().resolves(mockData)
+                            }),
                         }),
                     }),
                 }),
@@ -58,7 +60,9 @@ describe('getAllOrganization', () => {
                 leftJoin: sinon.stub().returns({
                     leftJoin: sinon.stub().returns({
                         leftJoin: sinon.stub().returns({
-                            groupBy: sinon.stub().resolves([]),
+                            where: sinon.stub().returns({
+                                groupBy: sinon.stub().resolves([])
+                            }),
                         }),
                     }),
                 }),
