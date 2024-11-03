@@ -252,3 +252,20 @@ export async function updateRolePermission(roleId: string, permission: roleModel
 
     return role;
 }
+
+export async function getAdminId(organizationId: string): Promise<string> {
+    const [admin] = await db.select({
+        roleId: schemas.userTable.userId,
+    })
+        .from(schemas.roleTable)
+        .where(and(
+            eq(schemas.roleTable.roleName, roleModel.ADMIN_ROLE),
+            eq(schemas.roleTable.organizationId, organizationId),
+        ));
+
+    if (!admin) {
+        throw new Error(`Admin not found in organization ${organizationId}`);
+    }
+
+    return admin.roleId;
+}
