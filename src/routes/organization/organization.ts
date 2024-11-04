@@ -86,7 +86,7 @@ export const organization = (app: Elysia) =>
                 },
                 body: createOrganizationBody
             })
-            .post('/invite', async ({error, payload, body, jwtInvite}) => {
+            .post('/invite-admin', async ({error, payload, body, jwtInvite}) => {
                 try {
                     if (!payload.isOwner) return error(401, "Unauthorized")
 

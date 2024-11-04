@@ -255,7 +255,7 @@ export async function updateRolePermission(roleId: string, permission: roleModel
 
 export async function getAdminId(organizationId: string): Promise<string> {
     const [admin] = await db.select({
-        roleId: schemas.userTable.userId,
+        roleId: schemas.roleTable.roleId,
     })
         .from(schemas.roleTable)
         .where(and(
