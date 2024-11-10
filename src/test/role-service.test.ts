@@ -18,8 +18,7 @@ describe('getRoleOrganization', () => {
             from: sinon.stub().returnsThis(),
             leftJoin: sinon.stub().returnsThis(),
             where: sinon.stub().returnsThis(),
-            groupBy: sinon.stub().returnsThis(),
-            orderBy: sinon.stub().resolves([]),
+            groupBy: sinon.stub().resolves([])
         });
     });
 
@@ -39,9 +38,7 @@ describe('getRoleOrganization', () => {
             from: sinon.stub().returns({
                 leftJoin: sinon.stub().returns({
                     where: sinon.stub().returns({
-                        groupBy: sinon.stub().returns({
-                            orderBy: sinon.stub().resolves(mockResponse),
-                        }),
+                        groupBy: sinon.stub().resolves(mockResponse),
                     }),
                 }),
             }),
@@ -58,9 +55,7 @@ describe('getRoleOrganization', () => {
             from: sinon.stub().returns({
                 leftJoin: sinon.stub().returns({
                     where: sinon.stub().returns({
-                        groupBy: sinon.stub().returns({
-                            orderBy: sinon.stub().resolves([]),
-                        }),
+                        groupBy: sinon.stub().resolves([]),
                     }),
                 }),
             }),

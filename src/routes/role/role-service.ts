@@ -4,7 +4,7 @@ import * as schemas from "@/database/schemas";
 import * as roleModel from "@/models/role";
 
 export async function getRoleOrganization(organizationId: string): Promise<roleModel.roleInOrg[]> {
-    return db.select({
+    const roles = await db.select({
         roleId: schemas.roleTable.roleId,
         roleName: schemas.roleTable.roleName,
         members: count(schemas.userTable.userId).as('members'),
@@ -12,8 +12,18 @@ export async function getRoleOrganization(organizationId: string): Promise<roleM
         .from(schemas.roleTable)
         .leftJoin(schemas.userTable, eq(schemas.roleTable.roleId, schemas.userTable.roleId))
         .where(eq(schemas.roleTable.organizationId, organizationId))
-        .groupBy(schemas.roleTable.roleId)
-        .orderBy(schemas.roleTable.roleName);
+        .groupBy(schemas.roleTable.roleId);
+
+    roles.sort((a, b) => {
+        const nameA = a.roleName.match(/\D+/)?.[0] || '';
+        const numberA = parseInt(a.roleName.match(/\d+$/)?.[0] || '0');
+        const nameB = b.roleName.match(/\D+/)?.[0] || '';
+        const numberB = parseInt(b.roleName.match(/\d+$/)?.[0] || '0');
+
+        return nameA.localeCompare(nameB) || numberA - numberB;
+    });
+
+    return roles;
 }
 
 export async function getUnassignedRole(organizationId: string): Promise<roleModel.roleMemberInformation[]> {
