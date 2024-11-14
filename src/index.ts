@@ -36,6 +36,7 @@ new Elysia()
     .use(routes.dashboard)
     .use(routes.register)
     .use(routes.organization)
+    .use(routes.videoSession)
     .get("/", () => "Hello Elysia")
     .listen(3000);
 
