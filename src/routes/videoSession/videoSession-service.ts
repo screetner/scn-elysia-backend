@@ -1,15 +1,25 @@
-import {postVideo, videoSessionStateEnum} from "@/models/videoSession";
+import {videoSessionStateEnum} from "@/models/videoSession";
 import {db} from "@/database/database";
 import * as schemas from "@/database/schemas";
 import {and, eq} from "drizzle-orm";
 
-export async function postVideoSession(userId: string, data: postVideo) {
-    const [result] = await db.insert(schemas.videoSessionTable).values({
-        uploadUserId: userId,
-        uploadProgress: data.uploadProgress,
-        videoNames: data.videoNames,
-        state: videoSessionStateEnum.UPLOADING,
-    }).returning({ videoSessionId: schemas.videoSessionTable.videoSessionId });
+export async function postVideoSession(userId: string, postData: { uploadProgress: number, videoNames: string[] }) {
+    if (postData.uploadProgress < 0 || postData.uploadProgress > 100) {
+        throw new Error('Invalid input data: uploadProgress must be between 0 and 100');
+    }
+
+    if (!Array.isArray(postData.videoNames) || postData.videoNames.length === 0) {
+        throw new Error('Invalid input data: videoNames must be a non-empty array');
+    }
+
+    const [result] = await db.insert(schemas.videoSessionTable)
+        .values({
+            uploadUserId: userId,
+            uploadProgress: postData.uploadProgress,
+            videoNames: postData.videoNames,
+            state: videoSessionStateEnum.UPLOADING,
+        })
+        .returning({ videoSessionId: schemas.videoSessionTable.videoSessionId });
 
     return result;
 }
@@ -29,10 +39,6 @@ export async function updateVideoSession(videoSessionId: string, uploadProgress:
     if (!videoSession) {
         throw new Error(`Video session with ID ${videoSessionId} not found`);
     }
-
-    // if (videoSession.state === videoSessionStateEnum.CAN_DELETE) {
-    //     throw new Error(`Cannot update video session with ID ${videoSessionId} because it is in the 'canDelete' state`);
-    // }
 
     const [result] = await db.update(schemas.videoSessionTable)
         .set({
@@ -62,7 +68,7 @@ export async function removeVideoSession(videoSessionId: string, userId: string)
     }
 
     if (videoSession.state !== videoSessionStateEnum.CAN_DELETE) {
-        throw new Error(`Cannot remove video session with ID ${videoSessionId} because it is not in the 'canDelete' state`);
+        throw new Error(`Cannot remove video session with ID ${videoSessionId} because it is not in the '${videoSessionStateEnum.CAN_DELETE}' state`);
     }
 
     await db.delete(schemas.videoSessionTable)
