@@ -9,3 +9,4 @@ export * from "./member/member";
 export * from "./dashboard/dashboard";
 export * from "./register/register";
 export * from "./organization/organization";
+export * from "./videoSession/videoSession";
