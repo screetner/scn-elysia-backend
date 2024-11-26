@@ -15,12 +15,14 @@ export const refreshToken = new Elysia()
             jwtTusd.sign(payload)
         ]);
         return {
-            accessToken,
-            accessTokenExpiry : accessTokenExpire(60),
-            refreshToken,
-            refreshTokenExpiry : accessTokenExpire(60*60*24*7),
-            tusdToken,
-            tusdTokenExpiry : accessTokenExpire(60*60*24*7)
+            user: {
+                accessToken,
+                accessTokenExpiry : accessTokenExpire(60),
+                refreshToken,
+                refreshTokenExpiry : accessTokenExpire(60*60*24*7),
+                tusdToken,
+                tusdTokenExpiry : accessTokenExpire(60*60*24*7),
+            }
         }
     }, {
         detail: {
