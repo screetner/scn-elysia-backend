@@ -75,3 +75,14 @@ export async function getOrganizationInformation(orgId: string): Promise<OrgMode
 
     return organization;
 }
+
+export async function getInviteList(orgId: string): Promise<OrgModel.inviteData[]> {
+    return db.select({
+        inviterEmail: schemas.userTable.email,
+        inviteeEmail: schemas.inviteTable.email,
+        time: schemas.inviteTable.createdAt,
+    })
+        .from(schemas.inviteTable)
+        .leftJoin(schemas.userTable, eq(schemas.inviteTable.userId, schemas.userTable.userId))
+        .where(eq(schemas.inviteTable.organizationId, orgId));
+}

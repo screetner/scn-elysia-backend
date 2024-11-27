@@ -35,4 +35,10 @@ export const inviteOrganizationBody = t.Object({
     orgId: t.String(),
 });
 
-export const OWNER_ORGANIZATION_NAME = 'Screetner';
+export const OWNER_ORGANIZATION_NAME = 'Screetner'
+
+export interface inviteData {
+    inviterEmail: string | null,
+    inviteeEmail: string,
+    time: Date | null,
+}

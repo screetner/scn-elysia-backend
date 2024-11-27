@@ -3,7 +3,7 @@ import * as schemas from "@/database/schemas";
 import {desc, eq, inArray} from "drizzle-orm";
 import * as memberModel from "@/models/member";
 import sendEmailMessage from "@/libs/emailform";
-import {subject} from "@/models/member";
+import {sendInviteToken, subject} from "@/models/member";
 
 export async function getRecentMember(organizationId: string, limit?: number): Promise<memberModel.getRecentMember[]> {
     const query = db.select({
@@ -37,13 +37,14 @@ export async function checkEmailExist(emails: string[]): Promise<void> {
     }
 }
 
-export async function addInviteToDatabase(userId: string, organizationId: string, tokens: string[]) {
-    const insertPromises = tokens.map(token => {
+export async function addInviteToDatabase(userId: string, organizationId: string, emailAndTokens: sendInviteToken[]) {
+    const insertPromises = emailAndTokens.map(emailAndToken => {
         return db.insert(schemas.inviteTable)
             .values({
                 userId,
+                email: emailAndToken.email,
                 organizationId,
-                token
+                token: emailAndToken.token
             });
     });
 

@@ -2,7 +2,7 @@ import {Elysia} from "elysia";
 import {checkAccessToken} from "@/middleware/jwtRequire";
 import {
     createOrganization,
-    getAllOrganization,
+    getAllOrganization, getInviteList,
     getOrganizationInformation
 } from "@/routes/organization/organization-service";
 import {
@@ -73,7 +73,7 @@ export const organization = (app: Elysia) =>
                     }));
 
                     await Promise.all([
-                        addInviteToDatabase(payload.userId, data.orgId, sendInviteTokens.map(e => e.token)),
+                        addInviteToDatabase(payload.userId, data.orgId, sendInviteTokens),
                         sendInviteEmail(sendInviteTokens)
                     ]);
                 } catch (e) {
@@ -101,7 +101,7 @@ export const organization = (app: Elysia) =>
                     }));
 
                     await Promise.all([
-                        addInviteToDatabase(payload.userId, payload.orgId, sendInviteTokens.map(e => e.token)),
+                        addInviteToDatabase(payload.userId, payload.orgId, sendInviteTokens),
                         sendInviteEmail(sendInviteTokens)
                     ]);
                 } catch (e) {
@@ -113,6 +113,22 @@ export const organization = (app: Elysia) =>
                     tags: ["Organization"]
                 },
                 body: inviteOrganizationBody
+            })
+            .get('/invite-list', async ({error, payload}) => {
+                try {
+                    const response = await getInviteList(payload.orgId);
+
+                    if (!response) return error(401, "Unauthorized")
+
+                    return response;
+                }catch (e) {
+                    return error(500, e)
+                }
+            }, {
+                detail: {
+                    description: "Get Invite List",
+                    tags: ["Organization"]
+                }
             })
     },
     );
