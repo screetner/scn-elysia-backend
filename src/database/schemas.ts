@@ -96,6 +96,7 @@ export const videoSessionTable = pgTable('videoSessions', {
 
 export const inviteTable = pgTable('invites', {
     inviteId: text('inviteId').primaryKey().$defaultFn(createId),
+    email: varchar('email', { length: 100 }).notNull(),
     organizationId: text('organizationId').references(() => organizationTable.organizationId).notNull(),
     userId: text('userId').references(() => userTable.userId),
     token: text('token').notNull(),

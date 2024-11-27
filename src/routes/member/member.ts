@@ -63,7 +63,7 @@ export const member = (app: Elysia) =>
                     }));
 
                     await Promise.all([
-                        addInviteToDatabase(payload.userId, payload.orgId, sendInviteTokens.map(e => e.token)),
+                        addInviteToDatabase(payload.userId, payload.orgId, sendInviteTokens),
                         sendInviteEmail(sendInviteTokens)
                     ]);
                 } catch (e) {

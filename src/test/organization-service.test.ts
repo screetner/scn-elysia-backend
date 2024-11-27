@@ -2,7 +2,7 @@ import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
 import sinon from 'sinon';
 import {
     createOrganization,
-    getAllOrganization,
+    getAllOrganization, getInviteList,
     getOrganizationInformation
 } from '@/routes/organization/organization-service';
 import { db } from "@/database/database";
@@ -178,6 +178,54 @@ describe('getOrganizationInformation', () => {
 
         const result = await getOrganizationInformation('org123');
         expect(result).toBeUndefined();
+        sinon.assert.calledOnce(selectStub);
+    });
+});
+
+describe('getInviteList', () => {
+    let selectStub: sinon.SinonStub;
+
+    beforeEach(() => {
+        selectStub = sinon.stub(db, 'select');
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should return invite list for the given organization ID', async () => {
+        const mockInviteList = [
+            {
+                inviterEmail: "inviter@example.com",
+                inviteeEmail: "invitee@example.com",
+                time: new Date("2023-01-01T00:00:00Z"),
+            },
+        ];
+
+        selectStub.returns({
+            from: sinon.stub().returns({
+                leftJoin: sinon.stub().returns({
+                    where: sinon.stub().resolves(mockInviteList)
+                }),
+            }),
+        });
+
+        const result = await getInviteList('org123');
+        expect(result).toEqual(mockInviteList);
+        sinon.assert.calledOnce(selectStub);
+    });
+
+    it('should return an empty array if no invite list is found for the given organization ID', async () => {
+        selectStub.returns({
+            from: sinon.stub().returns({
+                leftJoin: sinon.stub().returns({
+                    where: sinon.stub().resolves([])
+                }),
+            }),
+        });
+
+        const result = await getInviteList('org123');
+        expect(result).toEqual([]);
         sinon.assert.calledOnce(selectStub);
     });
 });
