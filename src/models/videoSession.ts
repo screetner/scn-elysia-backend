@@ -1,4 +1,4 @@
-import {Static, t} from "elysia";
+import {t} from "elysia";
 
 export enum videoSessionStateEnum {
     UPLOADING = 'uploading',
@@ -11,9 +11,8 @@ export enum videoSessionStateEnum {
 export const PostVideoBody = t.Object({
     uploadProgress: t.Number(),
     videoNames: t.Array(t.String()),
+    videoSessionName: t.String(),
 });
-
-export type postVideo = Static<typeof PostVideoBody>;
 
 export const validStates = Object.values(videoSessionStateEnum);
 export const INVALID_STATE = 'Invalid state';

@@ -3,7 +3,8 @@ import {db} from "@/database/database";
 import * as schemas from "@/database/schemas";
 import {and, eq} from "drizzle-orm";
 
-export async function postVideoSession(userId: string, postData: { uploadProgress: number, videoNames: string[] }) {
+export async function postVideoSession(userId: string, postData:
+    { uploadProgress: number, videoNames: string[], videoSessionName: string }) {
     if (postData.uploadProgress < 0 || postData.uploadProgress > 100) {
         throw new Error('Invalid input data: uploadProgress must be between 0 and 100');
     }
@@ -17,6 +18,7 @@ export async function postVideoSession(userId: string, postData: { uploadProgres
             uploadUserId: userId,
             uploadProgress: postData.uploadProgress,
             videoNames: postData.videoNames,
+            videoSessionName: postData.videoSessionName,
             state: videoSessionStateEnum.UPLOADING,
         })
         .returning({ videoSessionId: schemas.videoSessionTable.videoSessionId });

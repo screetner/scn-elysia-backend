@@ -88,6 +88,7 @@ export const videoSessionTable = pgTable('videoSessions', {
     videoSessionId: text('videoSessionId').primaryKey().$defaultFn(createId),
     uploadUserId: text('uploadUserId').references(() => userTable.userId).notNull(),
     uploadProgress: bigint('uploadProgress', { mode: 'number' }),
+    videoSessionName: varchar('videoSessionName', { length: 50 }).notNull(),
     videoNames: text('videoNames').array().notNull(),
     state: videoSessionStateEnum('state'),
     createdAt: timestamp('createdAt').defaultNow(),
