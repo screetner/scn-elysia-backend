@@ -20,17 +20,14 @@ export const videoSession = (app: Elysia) =>
                 },
                 body: videoModel.PostVideoBody
             })
-            .patch('/updateState', async ({error, payload, body}) => {
+            .patch('/updateProcess', async ({error, payload, body}) => {
                 try {
-                    const state = videoModel.validStates.includes(body.state as videoModel.videoSessionStateEnum) ?
-                        body.state as videoModel.videoSessionStateEnum :
-                        videoModel.INVALID_STATE;
-
-                    if (state === videoModel.INVALID_STATE) {
-                        return error(400, videoModel.INVALID_STATE);
-                    }
-
-                    return await updateVideoSession(body.videoSessionId, body.uploadProgress, state, payload!.userId);
+                    return await updateVideoSession(
+                        body.videoSessionId,
+                        body.uploadProgress,
+                        videoModel.videoSessionStateEnum.PROCESSING,
+                        payload!.userId
+                    );
                 } catch (e) {
                     return error(500, e)
                 }

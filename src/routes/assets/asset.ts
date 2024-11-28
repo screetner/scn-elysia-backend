@@ -18,12 +18,10 @@ export const asset = (app: Elysia) =>
                 },
                 {
                     detail: {
-                        title: "Get Asset",
-                        description: "Get Asset",
+                        description: "Get Asset by AssetId",
                         tags: ["Asset"],
                     },
                     params: GetAssetByAssetId,
-                    response: {},
                 }
             )
             .get("/orgId",async ({error, payload}) => {
@@ -42,11 +40,9 @@ export const asset = (app: Elysia) =>
                 },
                 {
                     detail: {
-                        title: "Get Asset",
-                        description: "Get Asset",
+                        description: "Get All Assets by OrgId",
                         tags: ["Asset"],
                    },
-                    response: {},
                 }
             )
             .get("/org/:orgId",async ({error, params, payload}) => {
@@ -64,11 +60,9 @@ export const asset = (app: Elysia) =>
                 },
                 {
                     detail: {
-                        title: "Get Asset",
-                        description: "Get Asset",
+                        description: "Get Total Assets by OrgId for Owner",
                         tags: ["Asset"],
                     },
-                    response: {},
                 }
             )
     });
