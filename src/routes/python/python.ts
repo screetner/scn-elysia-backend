@@ -14,6 +14,7 @@ export const python = (app: Elysia) =>
         '',
         async ({ error, body }) => {
           try {
+            console.log('body', body)
             return await postAsset(body)
           } catch (e) {
             return error(500, e)

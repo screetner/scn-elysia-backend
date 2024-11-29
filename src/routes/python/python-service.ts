@@ -4,19 +4,19 @@ import * as schemas from '@/database/schemas'
 
 export async function postAsset(data: assetList) {
   const recordedUser = data.recordedUserId
-  const insertPromises = data.assets.map(asset => {
+  const values = data.assets.map(asset => {
     const geoCoordinate: [number, number] = [
       asset.geoCoordinate.lat,
       asset.geoCoordinate.lng,
     ]
-    return db.insert(schemas.assetTable).values({
+    return {
       geoCoordinate,
       assetTypeId: asset.assetTypeId,
       imageFileLink: asset.imageFileName,
       recordedUser,
-      recordedAt: asset.recordedAt,
-    })
+      recordedAt: new Date(asset.recordedAt),
+    }
   })
 
-  await Promise.all([insertPromises])
+  await db.insert(schemas.assetTable).values(values)
 }
