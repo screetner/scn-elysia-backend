@@ -1,5 +1,5 @@
-import { EmailMessage } from "@azure/communication-email";
-import client from "@/libs/emailclient";
+import { EmailMessage } from '@azure/communication-email'
+import client from '@/libs/emailclient'
 
 const htmlContent = (signupLink: string, token: string) => `
     <html lang="en">
@@ -26,22 +26,37 @@ const htmlContent = (signupLink: string, token: string) => `
             </div>
         </body>
     </html>
-`;
+`
 
-function createEmailMessage(recipientEmail: string, subjectContent: string, signupLink: string, token: string): EmailMessage {
-    return {
-        sender: "DoNotReply@screetner.studio",
-        content: {
-            subject: `${subjectContent}`,
-            html: htmlContent(signupLink, token),
-        },
-        recipients: {
-            to: [{ email: `${recipientEmail}` }],
-        },
-    };
+function createEmailMessage(
+  recipientEmail: string,
+  subjectContent: string,
+  signupLink: string,
+  token: string,
+): EmailMessage {
+  return {
+    sender: 'DoNotReply@screetner.studio',
+    content: {
+      subject: `${subjectContent}`,
+      html: htmlContent(signupLink, token),
+    },
+    recipients: {
+      to: [{ email: `${recipientEmail}` }],
+    },
+  }
 }
 
-export default async function sendEmailMessage(recipientEmail: string, subjectContent: string, signupLink: string, token: string) {
-    const emailMessage = createEmailMessage(recipientEmail, subjectContent, signupLink, token);
-    await client.send(emailMessage);
+export default async function sendEmailMessage(
+  recipientEmail: string,
+  subjectContent: string,
+  signupLink: string,
+  token: string,
+) {
+  const emailMessage = createEmailMessage(
+    recipientEmail,
+    subjectContent,
+    signupLink,
+    token,
+  )
+  await client.send(emailMessage)
 }
