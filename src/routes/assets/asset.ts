@@ -3,7 +3,7 @@ import { checkAccessToken } from '@/middleware/jwtRequire'
 import { assetData, GetAssetByAssetId } from '@/models/asset'
 import {
   countAssetsByOrgId,
-  findAssetsByIds,
+  findAssetByIds,
   findAssetsByOrgId,
   generateAssetImageUrl,
 } from '@/routes/assets/asset-services'
@@ -17,9 +17,9 @@ export const asset = (app: Elysia) =>
       .get(
         '/assetId/:assetId',
         async ({ error, payload, params }) => {
-          const assetIds = params.assetId.split(',')
+          const assetId = params.assetId
           try {
-            const assetsData: assetData[] = await findAssetsByIds(assetIds)
+            const assetsData: assetData = await findAssetByIds(assetId)
             const SAS = await getSAS(payload.orgId!)
             return generateAssetImageUrl(SAS, assetsData)
           } catch (e) {

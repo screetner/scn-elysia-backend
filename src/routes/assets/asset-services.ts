@@ -1,5 +1,5 @@
 import { db } from '@/database/database'
-import { count, eq, inArray } from 'drizzle-orm'
+import { count, eq } from 'drizzle-orm'
 import * as schemas from '@/database/schemas'
 import * as process from 'node:process'
 import {
@@ -9,16 +9,10 @@ import {
 } from '@azure/storage-file-datalake'
 import * as assetModel from '@/models/asset'
 
-export async function findAssetById(assetId: string) {
-  return db.query.assetTable.findFirst({
-    where: eq(schemas.assetTable.assetId, assetId),
-  })
-}
-
-export async function findAssetsByIds(
-  assetIds: string[],
-): Promise<assetModel.assetData[]> {
-  return db
+export async function findAssetByIds(
+  assetId: string,
+): Promise<assetModel.assetData> {
+  const [result] = await db
     .select({
       assetId: schemas.assetTable.assetId,
       geoCoordinate: schemas.assetTable.geoCoordinate,
@@ -36,7 +30,8 @@ export async function findAssetsByIds(
       schemas.userTable,
       eq(schemas.assetTable.recordedUser, schemas.userTable.userId),
     )
-    .where(inArray(schemas.assetTable.assetId, assetIds))
+    .where(eq(schemas.assetTable.assetId, assetId))
+  return result
 }
 
 export async function findAssetsByOrgId(orgId: string) {
@@ -136,10 +131,11 @@ export async function generateSAS(dirName: string) {
 
 export function generateAssetImageUrl(
   sas: string,
-  assetSData: assetModel.assetData[],
+  assetData: assetModel.assetData,
 ) {
-  return assetSData.map(assetData => ({
+  return {
     ...assetData,
-    imageUrl: `${process.env.BLOB_BASE_PATH}${assetData.imageUrl}?${sas}`,
-  }))
+    imageUrl:
+      (assetData.imageUrl = `${process.env.BLOB_BASE_PATH}${assetData.imageUrl}?${sas}`),
+  }
 }
