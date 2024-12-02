@@ -113,7 +113,7 @@ export async function generateSAS(dirName: string) {
   const startDate = new Date()
   startDate.setMinutes(startDate.getMinutes())
   const expiryDate = new Date()
-  expiryDate.setHours(expiryDate.getHours() + 24)
+  expiryDate.setHours(expiryDate.getHours() + 720)
 
   const permissions = new DataLakeSASPermissions()
   permissions.read = true
@@ -132,4 +132,14 @@ export async function generateSAS(dirName: string) {
   )
 
   return sasQueryParameter.toString()
+}
+
+export function generateAssetImageUrl(
+  sas: string,
+  assetSData: assetModel.assetData[],
+) {
+  return assetSData.map(assetData => ({
+    ...assetData,
+    imageUrl: `${process.env.BLOB_BASE_PATH}${assetData.imageUrl}?${sas}`,
+  }))
 }
