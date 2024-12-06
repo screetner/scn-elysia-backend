@@ -1,4 +1,8 @@
-import { videoSessionStateEnum } from '@/models/videoSession'
+import {
+  GenerateVideoSession,
+  RequestPythonDetection,
+  videoSessionStateEnum,
+} from '@/models/videoSession'
 import { db } from '@/database/database'
 import * as schemas from '@/database/schemas'
 import { and, eq } from 'drizzle-orm'
@@ -38,7 +42,6 @@ export async function postVideoSession(
 export async function updateVideoSession(
   videoSessionId: string,
   uploadProgress: number,
-  state: videoSessionStateEnum,
   userId: string,
 ) {
   const [videoSession] = await db
@@ -56,6 +59,12 @@ export async function updateVideoSession(
   if (!videoSession) {
     throw new Error(`Video session with ID ${videoSessionId} not found`)
   }
+
+  const state =
+    videoSession.state == videoSessionStateEnum.UPLOADING &&
+    uploadProgress != 100
+      ? videoSessionStateEnum.UPLOADING
+      : videoSessionStateEnum.PROCESSING
 
   const [result] = await updateVideoSessionHelper(
     videoSessionId,
@@ -104,4 +113,36 @@ export async function removeVideoSession(videoSessionId: string) {
     .where(eq(schemas.videoSessionTable.videoSessionId, videoSessionId))
 
   return { videoSessionId }
+}
+
+async function getVideoSessionName(videoSessionId: string) {
+  const [result] = await db
+    .select({
+      videoSessionName: schemas.videoSessionTable.videoSessionName,
+    })
+    .from(schemas.videoSessionTable)
+    .where(eq(schemas.videoSessionTable.videoSessionId, videoSessionId))
+
+  return result
+}
+
+export async function generateSessionFolderPath(
+  data: GenerateVideoSession,
+): Promise<RequestPythonDetection> {
+  const videoSessionName = await getVideoSessionName(data.videoSessionId)
+  const session_folder_path =
+    `${data.organizationName}_${data.organizationId}/records/${videoSessionName.videoSessionName}`.replace(
+      / /g,
+      '_',
+    )
+  const session_detected_folder_path =
+    `${data.organizationName}_${data.organizationId}/detected_images/${videoSessionName.videoSessionName}`.replace(
+      / /g,
+      '_',
+    )
+  return {
+    sessionId: videoSessionName.videoSessionName,
+    session_folder_path,
+    session_detected_folder_path,
+  }
 }

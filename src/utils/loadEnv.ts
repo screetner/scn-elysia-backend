@@ -12,6 +12,7 @@ type ENV = {
   AZURE_ACCOUNT_KEY?: string
   AZURE_CONTAINER_NAME?: string
   BLOB_BASE_PATH?: string
+  PYTHON_DETECTION_PATH?: string
 }
 
 export function loadEnv() {
@@ -30,6 +31,7 @@ export function loadEnv() {
     AZURE_ACCOUNT_KEY: true,
     AZURE_CONTAINER_NAME: true,
     BLOB_BASE_PATH: true,
+    PYTHON_DETECTION_PATH: true,
   }) as (keyof ENV)[]
 
   const missingVars: string[] = []
