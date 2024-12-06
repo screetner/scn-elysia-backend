@@ -34,23 +34,24 @@ export const videoSession = (app: Elysia) =>
         '/updateProcess',
         async ({ error, payload, body }) => {
           try {
-            const updatePromise = updateVideoSession(
+            const isUpdated = await updateVideoSession(
               body.videoSessionId,
               body.uploadProgress,
               payload!.userId,
             )
 
-            const generateAndProcessPromise = (async () => {
-              const requestBody: videoModel.RequestPythonDetection =
-                await generateSessionFolderPath({
-                  videoSessionId: body.videoSessionId,
-                  organizationId: payload!.orgId,
-                  organizationName: payload!.orgName,
-                })
-              await trickProcess(requestBody)
-            })()
+            if (isUpdated) {
+              const generatePromise = generateSessionFolderPath({
+                videoSessionId: body.videoSessionId,
+                organizationId: payload!.orgId,
+                organizationName: payload!.orgName,
+              })
+              const processPromise = generatePromise.then(requestBody =>
+                trickProcess(requestBody),
+              )
 
-            await Promise.all([updatePromise, generateAndProcessPromise])
+              await Promise.all([generatePromise, processPromise])
+            }
 
             return { message: 'Update Success' }
           } catch (e) {
@@ -69,19 +70,18 @@ export const videoSession = (app: Elysia) =>
         '/processing',
         async ({ error, payload, body }) => {
           try {
-            const generateAndProcessPromise = (async () => {
-              const requestBody: videoModel.RequestPythonDetection =
-                await generateSessionFolderPath({
-                  videoSessionId: body.videoSessionId,
-                  organizationId: payload!.orgId,
-                  organizationName: payload!.orgName,
-                })
-              await trickProcess(requestBody)
-            })()
+            const generatePromise = generateSessionFolderPath({
+              videoSessionId: body.videoSessionId,
+              organizationId: payload!.orgId,
+              organizationName: payload!.orgName,
+            })
+            const processPromise = generatePromise.then(requestBody =>
+              trickProcess(requestBody),
+            )
 
-            await Promise.all([generateAndProcessPromise])
+            await Promise.all([generatePromise, processPromise])
 
-            return { message: 'Update Success' }
+            return { message: 'Start Processing' }
           } catch (e) {
             return error(500, e)
           }

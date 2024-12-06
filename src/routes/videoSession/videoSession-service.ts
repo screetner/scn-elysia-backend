@@ -62,17 +62,13 @@ export async function updateVideoSession(
 
   const state =
     videoSession.state == videoSessionStateEnum.UPLOADING &&
-    uploadProgress != 100
+    uploadProgress < 100
       ? videoSessionStateEnum.UPLOADING
       : videoSessionStateEnum.PROCESSING
 
-  const [result] = await updateVideoSessionHelper(
-    videoSessionId,
-    uploadProgress,
-    state,
-  )
+  await updateVideoSessionHelper(videoSessionId, uploadProgress, state)
 
-  return result
+  return state == videoSessionStateEnum.PROCESSING
 }
 
 export async function updateVideoSessionHelper(
