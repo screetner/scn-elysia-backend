@@ -6,6 +6,7 @@ import { rolePermission } from '@/models/role'
 import sendLog from '@/libs/log'
 import { refreshToken } from '@/routes/auth/refreshToken'
 import { redisClient } from '@/libs/redisClient'
+import { getUserPermission } from '@/middleware/checkPermissions'
 
 export const auth = (app: Elysia) =>
   app.group('auth', app => {
@@ -76,6 +77,7 @@ export const auth = (app: Elysia) =>
             payload.roleId,
             JSON.stringify(payload.abilityScope),
           )
+          await getUserPermission(payload.userId)
 
           return CustomResponse.ok(result).toStandardResponse()
         } catch (e) {
