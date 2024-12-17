@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis'
+import Redis from 'ioredis'
 
 class RedisSingleton {
   private static instance: Redis
@@ -6,10 +6,7 @@ class RedisSingleton {
   public static getInstance(): Redis {
     if (!RedisSingleton.instance) {
       // Initialize the Redis client only once
-      RedisSingleton.instance = new Redis({
-        url: process.env.REDIS_URL,
-        token: process.env.REDIS_TOKEN,
-      })
+      RedisSingleton.instance = new Redis(process.env.REDIS_URL || "")
     }
     return RedisSingleton.instance
   }
