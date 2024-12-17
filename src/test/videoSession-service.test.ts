@@ -30,6 +30,7 @@ describe('postVideoSession', () => {
     const result = await postVideoSession('userId', {
       uploadProgress: 0,
       videoNames: ['video-123'],
+      videoSessionName: 'videoSessionName',
     })
 
     expect(result).toEqual({ videoSessionId })
@@ -46,13 +47,18 @@ describe('postVideoSession', () => {
       postVideoSession('userId', {
         uploadProgress: 0,
         videoNames: ['video-123'],
+        videoSessionName: 'videoSessionName',
       }),
     ).rejects.toThrow('Database error')
   })
 
   it('should throw an error if uploadProgress is less than 0', async () => {
     expect(
-      postVideoSession('userId', { uploadProgress: -1, videoNames: [] }),
+      postVideoSession('userId', {
+        uploadProgress: -1,
+        videoNames: [],
+        videoSessionName: 'videoSessionName',
+      }),
     ).rejects.toThrow(
       'Invalid input data: uploadProgress must be between 0 and 100',
     )
@@ -60,7 +66,11 @@ describe('postVideoSession', () => {
 
   it('should throw an error if input data is invalid', async () => {
     expect(
-      postVideoSession('userId', { uploadProgress: 0, videoNames: [] }),
+      postVideoSession('userId', {
+        uploadProgress: 0,
+        videoNames: [],
+        videoSessionName: 'videoSessionName',
+      }),
     ).rejects.toThrow(
       'Invalid input data: videoNames must be a non-empty array',
     )
@@ -129,14 +139,9 @@ describe('updateVideoSession', () => {
       }),
     })
 
-    expect(
-      updateVideoSession(
-        'videoSessionId',
-        0,
-        videoSessionStateEnum.PROCESSING,
-        'userId',
-      ),
-    ).rejects.toThrow('Database error')
+    expect(updateVideoSession('videoSessionId', 0, 'userId')).rejects.toThrow(
+      'Database error',
+    )
   })
 })
 
@@ -166,7 +171,7 @@ describe('removeVideoSession', () => {
       where: sinon.stub().resolves(),
     })
 
-    await removeVideoSession('videoSessionId', 'userId')
+    await removeVideoSession('videoSessionId')
 
     expect(dbDeleteStub.calledOnce).toBe(true)
   })
@@ -178,7 +183,7 @@ describe('removeVideoSession', () => {
       }),
     })
 
-    expect(removeVideoSession('videoSessionId', 'userId')).rejects.toThrow(
+    expect(removeVideoSession('videoSessionId')).rejects.toThrow(
       'Video session with ID videoSessionId not found',
     )
   })
@@ -192,7 +197,7 @@ describe('removeVideoSession', () => {
       }),
     })
 
-    expect(removeVideoSession('videoSessionId', 'userId')).rejects.toThrow(
+    expect(removeVideoSession('videoSessionId')).rejects.toThrow(
       `Cannot remove video session with ID videoSessionId because it is not in the '${videoSessionStateEnum.CAN_DELETE}' state`,
     )
   })
