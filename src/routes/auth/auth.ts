@@ -11,8 +11,16 @@ export const auth = (app: Elysia) =>
   app.group('auth', app => {
     return app.use(refreshToken).post(
       '/login',
-      async ({ body, error, jwtAccess, jwtRefresh, jwtTusd }) => {
+      async ({
+        body,
+        error,
+        jwtAccess,
+        jwtRefresh,
+        jwtTusd,
+        request: { headers },
+      }) => {
         try {
+          console.log(headers.get('user-agent'))
           const user = await findUser(body)
 
           if (!user) return error(401, 'Unauthorized')
