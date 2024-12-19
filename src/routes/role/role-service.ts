@@ -2,6 +2,7 @@ import { db } from '@/database/database'
 import { and, count, eq, inArray, like, not } from 'drizzle-orm'
 import * as schemas from '@/database/schemas'
 import * as roleModel from '@/models/role'
+import { setUserPermissionToRedis } from '@/middleware/checkPermissions'
 
 export async function getRoleOrganization(
   organizationId: string,
@@ -103,6 +104,7 @@ export async function assignRole(
     .select({
       roleId: schemas.roleTable.roleId,
       organizationId: schemas.roleTable.organizationId,
+      abilityScope: schemas.roleTable.abilityScope,
     })
     .from(schemas.roleTable)
     .where(
@@ -122,6 +124,7 @@ export async function assignRole(
       roleName: schemas.roleTable.roleName,
       organizationId: schemas.roleTable.organizationId,
       username: schemas.userTable.username,
+      userId: schemas.userTable.userId,
     })
     .from(schemas.userTable)
     .leftJoin(
@@ -139,6 +142,11 @@ export async function assignRole(
         `User ${userRole.username} is not part of the organization`,
       )
     }
+    setUserPermissionToRedis(
+      userRole.userId,
+      roleId,
+      newRole.abilityScope as roleModel.rolePermission,
+    )
   })
 
   return db
@@ -157,6 +165,7 @@ export async function unassignRole(
   const [defaultRole] = await db
     .select({
       roleId: schemas.roleTable.roleId,
+      abilityScope: schemas.roleTable.abilityScope,
     })
     .from(schemas.roleTable)
     .where(
@@ -199,6 +208,12 @@ export async function unassignRole(
     })
     .where(eq(schemas.userTable.userId, userId))
     .returning({ userId: schemas.userTable.userId })
+
+  setUserPermissionToRedis(
+    updatedUser.userId,
+    defaultRole.roleId,
+    defaultRole.abilityScope as roleModel.rolePermission,
+  )
 
   return updatedUser
 }

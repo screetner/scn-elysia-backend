@@ -24,6 +24,7 @@ import {
   roleInformation,
   UpdateRolePermission,
 } from '@/models/role'
+import { setUserPermissionToRedis } from '@/middleware/checkPermissions'
 
 export const role = (app: Elysia) =>
   app.group('role', app => {
@@ -45,11 +46,6 @@ export const role = (app: Elysia) =>
           }
         },
         {
-          permission: {
-            web: {
-              access: true,
-            },
-          },
           detail: {
             description:
               'Get All Role Organization for Organization and Members foreach Role',
@@ -176,6 +172,13 @@ export const role = (app: Elysia) =>
           }
         },
         {
+          permission: {
+            web: {
+              role: {
+                manageMember: true,
+              },
+            },
+          },
           detail: {
             description: 'Assign Role to User',
             tags: ['Role'],
@@ -200,6 +203,13 @@ export const role = (app: Elysia) =>
           }
         },
         {
+          permission: {
+            web: {
+              role: {
+                manageMember: true,
+              },
+            },
+          },
           detail: {
             description: 'Unassign Role from User',
             tags: ['Role'],
@@ -261,6 +271,13 @@ export const role = (app: Elysia) =>
           }
         },
         {
+          permission: {
+            web: {
+              role: {
+                delete: true,
+              },
+            },
+          },
           detail: {
             description: 'Remove Role from Organization',
             tags: ['Role'],
@@ -282,6 +299,13 @@ export const role = (app: Elysia) =>
           }
         },
         {
+          permission: {
+            web: {
+              role: {
+                create: true,
+              },
+            },
+          },
           detail: {
             description: 'Create New Role in Organization',
             tags: ['Role'],
@@ -300,12 +324,25 @@ export const role = (app: Elysia) =>
 
             if (!response) return error(401, 'Unauthorized')
 
+            setUserPermissionToRedis(
+              payload.userId!,
+              payload.roleId!,
+              body.permission,
+            )
+
             return response
           } catch (e) {
             return error(500, e)
           }
         },
         {
+          permission: {
+            web: {
+              role: {
+                managePermission: true,
+              },
+            },
+          },
           detail: {
             description: 'Update Role Permission in Organization by RoleId',
             tags: ['Role'],
