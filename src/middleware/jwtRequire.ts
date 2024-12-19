@@ -7,6 +7,7 @@ import {
 } from '@/routes/auth/setup'
 import { JWTInvitePayload, JWTPayload } from '@/models/auth'
 import { checkPermission } from '@/middleware/checkPermissions'
+import { checkPermissionType } from '@/models/role'
 
 // @ts-ignore
 const checkImproperToken = async (
@@ -54,7 +55,7 @@ export const checkAccessToken = (app: Elysia) =>
       return checkImproperToken(token, 'Access token', set, jwtAccess)
     })
     .macro(({ onBeforeHandle }) => ({
-      permission(requiredPermissions?: Record<string, any>) {
+      permission(requiredPermissions?: checkPermissionType) {
         onBeforeHandle(async (context: any) => {
           const payload: JWTPayload = context.payload!
 
