@@ -5,38 +5,35 @@ import { db } from '@/database/database'
 import * as schemas from '@/database/schemas'
 import { eq } from 'drizzle-orm'
 
-type PermissionCheck = Partial<{
-  [K in keyof rolePermission]: Partial<Record<keyof rolePermission[K], boolean>>
-}>
-
-export const checkPermissions = async (
+export async function checkPermission(
+  requiredPermissions: Record<string, any>,
   payload: JWTPayload,
-  ...permissionSets: PermissionCheck[]
-): Promise<boolean> => {
-  if (!payload) {
-    return false
+): Promise<boolean> {
+  if (!payload) return false
+  if (!requiredPermissions) return true
+
+  let userPermissions = await getUserPermissionFromRedis(payload.userId)
+  if (!userPermissions) {
+    userPermissions = await getUserPermissionFromDB(payload.roleId)
+    setUserPermissionToRedis(payload.userId, payload.roleId, userPermissions)
   }
 
-  let data = await getUserPermissionFromRedis(payload.userId)
-  if (!data) {
-    data = await getUserPermissionFromDB(payload.roleId)
-    setUserPermissionToRedis(payload.userId, payload.roleId, data)
-  }
-
-  return permissionSets.every(permissionSet =>
-    Object.entries(permissionSet).every(([category, permissions]) =>
-      Object.entries(permissions).every(
-        ([permission, required]) =>
-          !required ||
-          data[category as keyof rolePermission]?.[
-            permission as keyof rolePermission[keyof rolePermission]
-          ] === true,
-      ),
-    ),
-  )
+  return matchPermissions(requiredPermissions, userPermissions)
 }
 
-export async function getUserPermissionFromRedis(
+function matchPermissions(
+  requiredPermissions: Record<string, any>,
+  userPermissions: Record<string, any>,
+): boolean {
+  return Object.entries(requiredPermissions).every(([key, value]) => {
+    if (typeof value === 'object') {
+      return matchPermissions(value, userPermissions?.[key])
+    }
+    return userPermissions?.[key] === value
+  })
+}
+
+async function getUserPermissionFromRedis(
   userId: string,
 ): Promise<rolePermission | null> {
   try {
@@ -57,7 +54,7 @@ export async function getUserPermissionFromRedis(
     return permission ? (JSON.parse(permission) as rolePermission) : null
   } catch (e) {
     console.log(e)
-    return null // Ensures a return value even on error
+    return null
   }
 }
 

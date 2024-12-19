@@ -45,6 +45,11 @@ export const role = (app: Elysia) =>
           }
         },
         {
+          permission: {
+            web: {
+              access: true,
+            },
+          },
           detail: {
             description:
               'Get All Role Organization for Organization and Members foreach Role',
@@ -224,6 +229,13 @@ export const role = (app: Elysia) =>
           }
         },
         {
+          checkPermissions: {
+            web: {
+              role: {
+                managePermission: true,
+              },
+            },
+          },
           detail: {
             description: 'Update Role Name',
             tags: ['Role'],
