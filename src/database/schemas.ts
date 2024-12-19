@@ -20,7 +20,9 @@ export const assetTypeTable = pgTable(
     assetTypeId: text('assetTypeId').primaryKey().$defaultFn(createId),
     assetType: varchar('assetType', { length: 255 }).notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
-    updatedAt: timestamp('updatedAt').defaultNow(),
+    updatedAt: timestamp('updatedAt')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   table => ({
     assetTypeIdIdx: index('assetType_assetTypeId_idx').on(table.assetTypeId),
@@ -40,7 +42,9 @@ export const assetTable = pgTable(
     recordedUser: text('recordedUser').references(() => userTable.userId),
     recordedAt: timestamp('recordedAt').notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
-    updatedAt: timestamp('updatedAt').defaultNow(),
+    updatedAt: timestamp('updatedAt')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   table => ({
     assetIdIdx: index('asset_assetId_idx').on(table.assetId),
@@ -58,7 +62,9 @@ export const organizationTable = pgTable(
     sasToken: varchar('sasToken', { length: 255 }),
     sasTokenExpireDate: timestamp('sasTokenExpireDate').defaultNow(),
     createdAt: timestamp('createdAt').defaultNow(),
-    updatedAt: timestamp('updatedAt').defaultNow(),
+    updatedAt: timestamp('updatedAt')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   table => ({
     organizationIdIdx: index('org_organizationId_idx').on(table.organizationId),
@@ -77,7 +83,9 @@ export const roleTable = pgTable(
     roleName: varchar('roleName', { length: 255 }).notNull(),
     abilityScope: jsonb('abilityScope').notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
-    updatedAt: timestamp('updatedAt').defaultNow(),
+    updatedAt: timestamp('updatedAt')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   table => ({
     roleIdIdx: index('role_roleId_idx').on(table.roleId),
@@ -99,7 +107,9 @@ export const userTable = pgTable(
     email: varchar('email', { length: 100 }).unique().notNull(),
     password: varchar('password', { length: 101 }).notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
-    updatedAt: timestamp('updatedAt').defaultNow(),
+    updatedAt: timestamp('updatedAt')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   table => ({
     userIdIdx: index('user_userId_idx').on(table.userId),
@@ -127,7 +137,9 @@ export const videoSessionTable = pgTable('videoSessions', {
   videoNames: text('videoNames').array().notNull(),
   state: videoSessionStateEnum('state'),
   createdAt: timestamp('createdAt').defaultNow(),
-  updatedAt: timestamp('updatedAt').defaultNow(),
+  updatedAt: timestamp('updatedAt')
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 })
 
 export const inviteTable = pgTable(

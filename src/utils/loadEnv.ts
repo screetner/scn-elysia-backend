@@ -13,6 +13,7 @@ type ENV = {
   AZURE_CONTAINER_NAME?: string
   BLOB_BASE_PATH?: string
   PYTHON_DETECTION_PATH?: string
+  REDIS_URL?: string
 }
 
 export function loadEnv() {
@@ -32,6 +33,7 @@ export function loadEnv() {
     AZURE_CONTAINER_NAME: true,
     BLOB_BASE_PATH: true,
     PYTHON_DETECTION_PATH: true,
+    REDIS_URL: true,
   }) as (keyof ENV)[]
 
   const missingVars: string[] = []

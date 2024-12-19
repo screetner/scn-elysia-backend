@@ -1,120 +1,140 @@
-import {Static, t} from 'elysia'
+import { Static, t } from 'elysia'
 
 export interface roleInOrg {
-    roleId: string,
-    roleName: string,
-    members: number,
+  roleId: string
+  roleName: string
+  members: number
 }
 
 export interface roleMemberInformation {
-    userId: string,
-    username: string,
-    email: string,
+  userId: string
+  username: string
+  email: string
 }
 
 export interface roleInformation {
-    roleId: string,
-    roleName: string,
+  roleId: string
+  roleName: string
 }
 
 export interface roleManagement {
-    roleInfo: roleInformation,
-    roleMembers: roleMemberInformation[],
-    rolePermissions: rolePermission,
+  roleInfo: roleInformation
+  roleMembers: roleMemberInformation[]
+  rolePermissions: rolePermission
 }
 
 export interface updateRoleUser {
-    userId: string,
+  userId: string
 }
 export interface updateRoleName {
-    roleId: string,
-    oldName: string,
-    newName: string,
+  roleId: string
+  oldName: string
+  newName: string
 }
 
-export const DEFAULT_ROLE = 'Default';
-export const ADMIN_ROLE = 'Admin';
-export const NEW_ROLE = 'New Role';
+export const DEFAULT_ROLE = 'Default'
+export const ADMIN_ROLE = 'Admin'
+export const NEW_ROLE = 'New Role'
 export const DEFAULT_PERMISSION: rolePermission = {
-    mobile: {
-        access: true,
-        videosProcess: false,
+  mobile: {
+    access: true,
+    videosProcess: false,
+  },
+  web: {
+    access: true,
+    manageGeometry: false,
+    member: {
+      invite: false,
     },
-    web: {
-        access: true,
-        manageGeometry: false,
-        member: {
-            invite: false,
-        },
-        role: {
-            create: false,
-            delete: false,
-            managePermission: false,
-            manageMember: false,
-        }
+    role: {
+      create: false,
+      delete: false,
+      managePermission: false,
+      manageMember: false,
     },
+  },
 }
 export const ADMIN_PERMISSION: rolePermission = {
-    mobile: {
-        access: true,
-        videosProcess: true,
+  mobile: {
+    access: true,
+    videosProcess: true,
+  },
+  web: {
+    access: true,
+    manageGeometry: true,
+    member: {
+      invite: true,
     },
-    web: {
-        access: true,
-        manageGeometry: true,
-        member: {
-            invite: true,
-        },
-        role: {
-            create: true,
-            delete: true,
-            managePermission: true,
-            manageMember: true,
-        }
+    role: {
+      create: true,
+      delete: true,
+      managePermission: true,
+      manageMember: true,
     },
+  },
 }
 
 export const RoleIdParams = t.Object({
-    roleId : t.String()
+  roleId: t.String(),
 })
 
 export const AssignRoleBody = t.Object({
-    userId : t.Array(t.String()),
-    roleId : t.String()
+  userId: t.Array(t.String()),
+  roleId: t.String(),
 })
 
 export const UnassignRoleBody = t.Object({
-    userId : t.String()
+  userId: t.String(),
 })
 
 export const UpdateRoleName = t.Object({
-    roleId : t.String(),
-    newName : t.String(),
+  roleId: t.String(),
+  newName: t.String(),
 })
 
 export const permission = t.Object({
-    mobile : t.Object({
-        access : t.Boolean(),
-        videosProcess : t.Boolean(),
+  mobile: t.Object({
+    access: t.Boolean(),
+    videosProcess: t.Boolean(),
+  }),
+  web: t.Object({
+    access: t.Boolean(),
+    manageGeometry: t.Boolean(),
+    member: t.Object({
+      invite: t.Boolean(),
     }),
-    web : t.Object({
-        access : t.Boolean(),
-        manageGeometry : t.Boolean(),
-        member : t.Object({
-            invite : t.Boolean(),
-        }),
-        role : t.Object({
-            create : t.Boolean(),
-            delete : t.Boolean(),
-            managePermission : t.Boolean(),
-            manageMember : t.Boolean(),
-        })
-    })
+    role: t.Object({
+      create: t.Boolean(),
+      delete: t.Boolean(),
+      managePermission: t.Boolean(),
+      manageMember: t.Boolean(),
+    }),
+  }),
 })
 
-export type rolePermission = Static<typeof permission>;
+export type rolePermission = Static<typeof permission>
+
+export interface checkPermissionType {
+  mobile?: {
+    access?: boolean
+    videosProcess?: boolean
+  }
+  web?: {
+    access?: boolean
+    manageGeometry?: boolean
+    member?: {
+      invite?: boolean
+    }
+    role?: {
+      create?: boolean
+      delete?: boolean
+      managePermission?: boolean
+      manageMember?: boolean
+    }
+  }
+}
 
 export const UpdateRolePermission = t.Object({
-    roleId : t.String(),
-    permission : permission
+  roleId: t.String(),
+  permission: permission,
 })
