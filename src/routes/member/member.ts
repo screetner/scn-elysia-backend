@@ -101,6 +101,13 @@ export const member = (app: Elysia) =>
           }
         },
         {
+          permission: {
+            web: {
+              member: {
+                invite: true,
+              },
+            },
+          },
           detail: {
             description: 'Invite member to organization',
             tags: ['Member'],

@@ -23,6 +23,11 @@ export const videoSession = (app: Elysia) =>
           }
         },
         {
+          permission: {
+            mobile: {
+              videosProcess: true,
+            },
+          },
           detail: {
             description: 'Post Video Session',
             tags: ['Video Session'],
@@ -59,6 +64,11 @@ export const videoSession = (app: Elysia) =>
           }
         },
         {
+          permission: {
+            mobile: {
+              videosProcess: true,
+            },
+          },
           detail: {
             description: 'Update Status of Video Session',
             tags: ['Video Session'],
@@ -87,6 +97,11 @@ export const videoSession = (app: Elysia) =>
           }
         },
         {
+          permission: {
+            mobile: {
+              videosProcess: true,
+            },
+          },
           detail: {
             description: 'Start Processing Video Session',
             tags: ['Video Session'],

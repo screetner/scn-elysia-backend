@@ -21,6 +21,11 @@ export const geolocation = (app: Elysia) =>
           }
         },
         {
+          permission: {
+            web: {
+              manageGeometry: true,
+            },
+          },
           body: PostGeoBody,
           detail: {
             title: 'Post Geolocation',
