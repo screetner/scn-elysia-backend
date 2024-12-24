@@ -233,11 +233,14 @@ export async function changeRoleName(
       and(
         eq(schemas.roleTable.roleId, roleId),
         eq(schemas.roleTable.organizationId, organizationId),
+        not(eq(schemas.roleTable.roleName, roleName)),
       ),
     )
 
   if (!role) {
-    throw new Error(`Role '${roleName}' not found in your organization`)
+    throw new Error(
+      `Role '${roleName}' is duplicated or not found in your organization`,
+    )
   }
 
   if (
@@ -367,6 +370,10 @@ export async function updateRolePermission(
     throw new Error(
       `Role with ID ${roleId} not found in organization ${organizationId}`,
     )
+  }
+
+  if (role.roleName === roleModel.ADMIN_ROLE) {
+    throw new Error(`Cannot change permission of the role '${role.roleName}'`)
   }
 
   await db

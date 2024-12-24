@@ -103,7 +103,7 @@ export const userTable = pgTable(
     roleId: text('roleId')
       .references(() => roleTable.roleId)
       .notNull(),
-    username: varchar('username', { length: 50 }).notNull(),
+    username: varchar('username', { length: 50 }).unique().notNull(),
     email: varchar('email', { length: 100 }).unique().notNull(),
     password: varchar('password', { length: 101 }).notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
