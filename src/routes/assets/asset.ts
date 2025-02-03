@@ -3,6 +3,7 @@ import { checkAccessToken } from '@/middleware/jwtRequire'
 import { assetData, GetAssetByAssetId } from '@/models/asset'
 import {
   countAssetsByOrgId,
+  deleteAssetById,
   findAssetByIds,
   findAssetsByOrgId,
   generateAssetImageUrl,
@@ -77,6 +78,24 @@ export const asset = (app: Elysia) =>
             description: 'Get Total Assets by OrgId for Owner',
             tags: ['Asset'],
           },
+        },
+      )
+      .delete(
+        '/assetId/:assetId',
+        async ({ error, params, payload }) => {
+          const assetId = params.assetId
+          try {
+            await deleteAssetById(assetId, payload.orgId!)
+          } catch (e) {
+            return error(500, e)
+          }
+        },
+        {
+          detail: {
+            description: 'Delete Asset by AssetId',
+            tags: ['Asset'],
+          },
+          params: GetAssetByAssetId,
         },
       )
   })

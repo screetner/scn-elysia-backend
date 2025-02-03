@@ -140,7 +140,6 @@ export async function getSAS(orgId: string): Promise<string> {
   } else {
     checkDate.setHours(checkDate.getHours() + 720)
     const dirName = `${sas.orgName}_${orgId}`.replace(/ /g, '_')
-    console.log('dirName', dirName)
     const sasToken = await generateSAS(dirName)
     await db
       .update(schemas.organizationTable)

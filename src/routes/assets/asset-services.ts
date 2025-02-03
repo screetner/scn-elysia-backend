@@ -8,6 +8,8 @@ import {
   StorageSharedKeyCredential,
 } from '@azure/storage-file-datalake'
 import * as assetModel from '@/models/asset'
+import { getSAS } from '@/routes/organization/organization-service'
+import { BlobClient } from '@azure/storage-blob'
 
 export async function findAssetByIds(
   assetId: string,
@@ -66,6 +68,28 @@ export async function findAssetsByOrgId(orgId: string) {
     .where(eq(schemas.organizationTable.organizationId, orgId))
 }
 
+export async function deleteAssetById(assetId: string, orgId: string) {
+  try {
+    const data = await findAssetByIds(assetId).then(data => {
+      if (!data) throw new Error(`Asset with ID ${assetId} not found`)
+      return data
+    })
+
+    const sasToken = await getSAS(orgId)
+    const imageUrl = generateAssetImageUrl(sasToken, data).imageUrl
+
+    const blobClient = new BlobClient(imageUrl)
+
+    await blobClient.delete()
+
+    await db
+      .delete(schemas.assetTable)
+      .where(eq(schemas.assetTable.assetId, assetId))
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 export async function countAssetsByOrgId(orgId: string) {
   return db
     .select({
@@ -112,6 +136,7 @@ export async function generateSAS(dirName: string) {
 
   const permissions = new DataLakeSASPermissions()
   permissions.read = true
+  permissions.delete = true
 
   // Generate the SAS token
   const sasQueryParameter = generateDataLakeSASQueryParameters(
@@ -132,7 +157,7 @@ export async function generateSAS(dirName: string) {
 export function generateAssetImageUrl(
   sas: string,
   assetData: assetModel.assetData,
-) {
+): assetModel.assetData {
   return {
     ...assetData,
     imageUrl:
