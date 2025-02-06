@@ -15,7 +15,11 @@ export async function checkPermission(
   let userPermissions = await getUserPermissionFromRedis(payload.userId)
   if (!userPermissions) {
     userPermissions = await getUserPermissionFromDB(payload.roleId)
-    setUserPermissionToRedis(payload.userId, payload.roleId, userPermissions)
+    await setUserPermissionToRedis(
+      payload.userId,
+      payload.roleId,
+      userPermissions,
+    )
   }
 
   return matchPermissions(requiredPermissions, userPermissions)

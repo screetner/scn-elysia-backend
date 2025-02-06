@@ -23,7 +23,7 @@ export const auth = (app: Elysia) =>
           )
 
           if (!isCorrect) {
-            sendLog({
+            await sendLog({
               userId: user.userId,
               description: 'Login',
               status: false,
@@ -64,17 +64,18 @@ export const auth = (app: Elysia) =>
             },
           }
 
-          sendLog({
-            userId: user.userId,
-            description: 'Login',
-            status: true,
-          })
-
-          setUserPermissionToRedis(
-            payload.userId,
-            payload.roleId,
-            payload.abilityScope,
-          )
+          await Promise.all([
+            sendLog({
+              userId: user.userId,
+              description: 'Login',
+              status: true,
+            }),
+            setUserPermissionToRedis(
+              payload.userId,
+              payload.roleId,
+              payload.abilityScope,
+            ),
+          ])
 
           return CustomResponse.ok(result).toStandardResponse()
         } catch (e) {
