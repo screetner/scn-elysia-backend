@@ -1,5 +1,5 @@
 import { db } from '@/database/database'
-import { count, eq } from 'drizzle-orm'
+import { and, count, eq, sql } from 'drizzle-orm'
 import * as schemas from '@/database/schemas'
 import * as process from 'node:process'
 import {
@@ -36,7 +36,10 @@ export async function findAssetByIds(
   return result
 }
 
-export async function findAssetsByOrgId(orgId: string) {
+export async function findAssetsByOrgId(
+  orgId: string,
+  inBorder: boolean = true,
+) {
   return db
     .select({
       assetId: schemas.assetTable.assetId,
@@ -65,7 +68,20 @@ export async function findAssetsByOrgId(orgId: string) {
       schemas.assetTypeTable,
       eq(schemas.assetTable.assetTypeId, schemas.assetTypeTable.assetTypeId),
     )
-    .where(eq(schemas.organizationTable.organizationId, orgId))
+    .where(
+      inBorder
+        ? and(
+            sql`ST_Contains(
+              ST_GeomFromEWKB(${schemas.organizationTable.border}),
+              ST_SetSRID(ST_MakePoint(
+              (${schemas.assetTable.geoCoordinate})[1],
+              (${schemas.assetTable.geoCoordinate})[0]
+              ), 4326)
+              )`,
+            eq(schemas.organizationTable.organizationId, orgId),
+          )
+        : eq(schemas.organizationTable.organizationId, orgId),
+    )
 }
 
 export async function deleteAssetById(assetId: string, orgId: string) {

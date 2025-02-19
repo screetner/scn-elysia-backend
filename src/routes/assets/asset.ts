@@ -1,6 +1,6 @@
 import { Elysia } from 'elysia'
 import { checkAccessToken } from '@/middleware/jwtRequire'
-import { assetData, GetAssetByAssetId } from '@/models/asset'
+import { assetData, GetAssetByAssetId, GetAssetsByOrgId } from '@/models/asset'
 import {
   countAssetsByOrgId,
   deleteAssetById,
@@ -37,11 +37,12 @@ export const asset = (app: Elysia) =>
       )
       .get(
         '/orgId',
-        async ({ error, payload }) => {
+        async ({ error, query, payload }) => {
           try {
+            const inBorder = query.inBorder ? query.inBorder : true
             const [border, assets] = await Promise.all([
               getGeo(payload.orgId!),
-              findAssetsByOrgId(payload.orgId!),
+              findAssetsByOrgId(payload.orgId!, inBorder),
             ])
             return {
               border,
@@ -55,6 +56,7 @@ export const asset = (app: Elysia) =>
           detail: {
             description: 'Get All Assets by OrgId',
             tags: ['Asset'],
+            query: GetAssetsByOrgId,
           },
         },
       )

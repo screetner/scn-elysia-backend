@@ -4,6 +4,10 @@ export const GetAssetByAssetId = t.Object({
   assetId: t.String(),
 })
 
+export const GetAssetsByOrgId = t.Object({
+  inBorder: t.Boolean(),
+})
+
 export interface assetData {
   assetId: string
   geoCoordinate: [number, number]
