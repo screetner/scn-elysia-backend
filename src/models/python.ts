@@ -15,4 +15,12 @@ export const PostAssetBody = t.Object({
   ),
 })
 
+export const PostProcessFailBody = t.Object({
+  videoSessionId: t.String(),
+})
+
+export const SuccessSubject = 'Asset Upload Success'
+export const FailSubject = 'Asset Upload Fail'
+export const errorMessage =
+  'Upload timeout or connection interrupted. Please ensure stable internet connection and try again.'
 export type assetList = Static<typeof PostAssetBody>

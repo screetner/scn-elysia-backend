@@ -1,6 +1,10 @@
 import { Elysia } from 'elysia'
-import { PostAssetBody } from '@/models/python'
-import { postAsset } from '@/routes/python/python-service'
+import { PostAssetBody, PostProcessFailBody } from '@/models/python'
+import {
+  postAsset,
+  sendEmail,
+  uploadFailCase,
+} from '@/routes/python/python-service'
 import { updateVideoSessionHelper } from '@/routes/videoSession/videoSession-service'
 import {
   VideoSessionIdParams,
@@ -14,7 +18,10 @@ export const python = (app: Elysia) =>
         '',
         async ({ error, body }) => {
           try {
-            return await postAsset(body)
+            return await Promise.all([
+              postAsset(body),
+              sendEmail(body.recordedUserId, true),
+            ])
           } catch (e) {
             return error(500, e)
           }
@@ -25,6 +32,24 @@ export const python = (app: Elysia) =>
             tags: ['Python'],
           },
           body: PostAssetBody,
+        },
+      )
+      .post(
+        '/process/fail',
+        async ({ error, body }) => {
+          try {
+            return await uploadFailCase(body.videoSessionId)
+          } catch (e) {
+            return error(500, e)
+          }
+        },
+        {
+          detail: {
+            description:
+              'Post Process Fail Data to Email for Admin users and Record User',
+            tags: ['Python'],
+          },
+          body: PostProcessFailBody,
         },
       )
       .patch(

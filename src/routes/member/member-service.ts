@@ -2,7 +2,7 @@ import { db } from '@/database/database'
 import * as schemas from '@/database/schemas'
 import { desc, eq, inArray } from 'drizzle-orm'
 import * as memberModel from '@/models/member'
-import sendEmailMessage from '@/libs/emailform'
+import { sendEmailInviteMessage } from '@/libs/emailform'
 import { sendInviteToken, subject } from '@/models/member'
 
 export async function getRecentMember(
@@ -69,7 +69,7 @@ export async function sendInviteEmail(
     sendInviteTokens.map(async sendInviteToken => {
       const url =
         process.env.FN_URL! + `/en/register?token=${sendInviteToken.token}`
-      await sendEmailMessage(
+      await sendEmailInviteMessage(
         sendInviteToken.email,
         subject,
         url,
