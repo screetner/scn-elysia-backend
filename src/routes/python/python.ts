@@ -16,7 +16,12 @@ export const python = (app: Elysia) =>
         async ({ error, body }) => {
           try {
             if (body.assets.length !== 0) await postAsset(body)
-            return await sendAlertEmail(body.recordedUserId, true)
+            return await sendAlertEmail(
+              body.recordedUserId,
+              true,
+              '',
+              body.assets.length,
+            )
           } catch (e) {
             return error(500, e)
           }

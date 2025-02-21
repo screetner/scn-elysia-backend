@@ -95,7 +95,11 @@ const htmlAlertContent = (
                         ? `<p style="margin: 5px 0;"><strong>Successfully uploaded:</strong> ${details.countAsset} image${details.countAsset > 1 ? 's' : ''}</p>`
                         : ''
                     }
-                    <p style="margin: 5px 0;"><strong>File Name:</strong> ${details.fileName}</p>
+                    ${
+                      !status && details.fileName
+                        ? `<p style="margin: 5px 0;"><strong>File:</strong> ${details.fileName}</p>`
+                        : ''
+                    }
                     <p style="margin: 5px 0;"><strong>Time:</strong> ${details.uploadTime}</p>
                     ${
                       !status && details.errorMessage
