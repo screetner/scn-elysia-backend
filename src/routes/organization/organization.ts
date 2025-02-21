@@ -15,11 +15,11 @@ import {
 import {
   addInviteToDatabase,
   checkEmailExist,
-  sendInviteEmail,
 } from '@/routes/member/member-service'
 import { sendInviteToken } from '@/models/member'
 import { jwtInviteSetup } from '@/routes/auth/setup'
 import { getAdminId } from '@/routes/role/role-service'
+import { sendInviteEmail } from '@/routes/email/email-service'
 
 export const organization = (app: Elysia) =>
   app.group('organization', app => {

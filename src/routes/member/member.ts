@@ -9,10 +9,10 @@ import {
   addInviteToDatabase,
   checkEmailExist,
   getRecentMember,
-  sendInviteEmail,
 } from '@/routes/member/member-service'
 import { jwtInviteSetup } from '@/routes/auth/setup'
 import * as memberModel from '@/models/member'
+import { sendInviteEmail } from '@/routes/email/email-service'
 
 export const member = (app: Elysia) =>
   app.group('member', app => {

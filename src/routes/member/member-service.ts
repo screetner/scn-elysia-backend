@@ -2,8 +2,7 @@ import { db } from '@/database/database'
 import * as schemas from '@/database/schemas'
 import { desc, eq, inArray } from 'drizzle-orm'
 import * as memberModel from '@/models/member'
-import { sendEmailInviteMessage } from '@/libs/emailform'
-import { sendInviteToken, subject } from '@/models/member'
+import { sendInviteToken } from '@/models/member'
 
 export async function getRecentMember(
   organizationId: string,
@@ -60,21 +59,4 @@ export async function addInviteToDatabase(
   }))
 
   await db.insert(schemas.inviteTable).values(values)
-}
-
-export async function sendInviteEmail(
-  sendInviteTokens: memberModel.sendInviteToken[],
-) {
-  await Promise.all(
-    sendInviteTokens.map(async sendInviteToken => {
-      const url =
-        process.env.FN_URL! + `/en/register?token=${sendInviteToken.token}`
-      await sendEmailInviteMessage(
-        sendInviteToken.email,
-        subject,
-        url,
-        sendInviteToken.token,
-      )
-    }),
-  )
 }

@@ -1,15 +1,12 @@
 import { Elysia } from 'elysia'
 import { PostAssetBody, PostProcessFailBody } from '@/models/python'
-import {
-  postAsset,
-  sendEmail,
-  uploadFailCase,
-} from '@/routes/python/python-service'
+import { postAsset } from '@/routes/python/python-service'
 import { updateVideoSessionHelper } from '@/routes/videoSession/videoSession-service'
 import {
   VideoSessionIdParams,
   videoSessionStateEnum,
 } from '@/models/videoSession'
+import { sendEmail, uploadFailCase } from '@/routes/email/email-service'
 
 export const python = (app: Elysia) =>
   app.group('python', app => {
