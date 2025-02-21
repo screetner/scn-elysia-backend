@@ -25,7 +25,6 @@ export async function sendAlertEmail(
 
   if (isCanSend) {
     result.slice(0, result.count).map(row => {
-      console.log(row.email)
       sendEmailAlertMessage(row.email as string, isCanSend, countAsset)
     })
   } else {
