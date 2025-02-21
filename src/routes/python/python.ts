@@ -6,7 +6,7 @@ import {
   VideoSessionIdParams,
   videoSessionStateEnum,
 } from '@/models/videoSession'
-import { sendEmail, uploadFailCase } from '@/routes/email/email-service'
+import { sendAlertEmail, uploadFailCase } from '@/routes/email/email-service'
 
 export const python = (app: Elysia) =>
   app.group('python', app => {
@@ -15,10 +15,8 @@ export const python = (app: Elysia) =>
         '',
         async ({ error, body }) => {
           try {
-            return await Promise.all([
-              await postAsset(body),
-              await sendEmail(body.recordedUserId, true),
-            ])
+            if (body.assets.length !== 0) await postAsset(body)
+            return await sendAlertEmail(body.recordedUserId, true)
           } catch (e) {
             return error(500, e)
           }

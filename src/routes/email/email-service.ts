@@ -7,10 +7,11 @@ import * as schemas from '@/database/schemas'
 import * as memberModel from '@/models/member'
 import { subject } from '@/models/member'
 
-export async function sendEmail(
+export async function sendAlertEmail(
   userId: string,
   isCanSend: boolean,
   videoSessionName?: string,
+  countAsset?: number,
 ) {
   const result = await db.execute(sql`
         SELECT u2.email
@@ -25,13 +26,14 @@ export async function sendEmail(
   if (isCanSend) {
     result.slice(0, result.count).map(row => {
       console.log(row.email)
-      sendEmailAlertMessage(row.email as string, isCanSend)
+      sendEmailAlertMessage(row.email as string, isCanSend, countAsset)
     })
   } else {
     result.slice(0, result.count).map(row => {
       sendEmailAlertMessage(
         row.email as string,
         isCanSend,
+        0,
         videoSessionName!,
         errorMessage,
       )
@@ -48,7 +50,7 @@ export async function uploadFailCase(videoSessionId: string) {
     .from(schemas.videoSessionTable)
     .where(eq(schemas.videoSessionTable.videoSessionId, videoSessionId))
 
-  await sendEmail(data.userId, false, data.videoSessionName)
+  await sendAlertEmail(data.userId, false, data.videoSessionName)
 }
 
 export async function sendInviteEmail(

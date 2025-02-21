@@ -68,6 +68,7 @@ const htmlAlertContent = (
     fileName?: string
     uploadTime: string
     errorMessage?: string
+    countAsset?: number
   },
 ) => `
     <html lang="en">
@@ -90,10 +91,11 @@ const htmlAlertContent = (
                 
                 <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
                     ${
-                      !status && details.fileName
-                        ? `<p style="margin: 5px 0;"><strong>File Name:</strong> ${details.fileName}</p>`
+                      status && details.countAsset
+                        ? `<p style="margin: 5px 0;"><strong>Successfully uploaded:</strong> ${details.countAsset} image${details.countAsset > 1 ? 's' : ''}</p>`
                         : ''
                     }
+                    <p style="margin: 5px 0;"><strong>File Name:</strong> ${details.fileName}</p>
                     <p style="margin: 5px 0;"><strong>Time:</strong> ${details.uploadTime}</p>
                     ${
                       !status && details.errorMessage
@@ -104,14 +106,14 @@ const htmlAlertContent = (
 
                 ${
                   status
-                    ? `<p>Your asset has been successfully uploaded to Screetner Studio. You can now use this asset in your projects.</p>`
+                    ? `<p>Your asset${details.countAsset && details.countAsset > 1 ? 's have' : ' has'} been successfully uploaded to Screetner Studio.</p>`
                     : `<p>Unfortunately, there was an issue uploading your asset. Please try again or contact support if the problem persists.</p>`
                 }
 
-                <div style="text-align: center; margin-top: 20px;">
-                    <div style="display: inline-block; padding: 10px 20px; background-color: ${status ? '#28a745' : '#dc3545'}; color: white; border-radius: 5px; font-weight: bold;">
-                        Status: ${status ? 'Successfully Uploaded' : 'Upload Failed'}
-                    </div>
+                <div style="margin-top: 20px; text-align: center; padding: 10px; background-color: ${status ? '#e8f5e9' : '#ffebee'}; border-radius: 5px;">
+                    <p style="margin: 0; font-size: 14px; color: ${status ? '#2e7d32' : '#c62828'};">
+                        Current Status: ${status ? 'Asset Upload Complete' : 'Upload Process Failed'}
+                    </p>
                 </div>
 
                 <p style="margin-top: 20px; font-size: 14px; color: #666; text-align: center;">
@@ -125,24 +127,18 @@ const htmlAlertContent = (
 function createEmailAlertMessage(
   recipientEmail: string,
   isCanSend: boolean,
+  countAsset?: number,
   fileName?: string,
   errorMessage?: string,
 ): EmailMessage {
-  const formatter = new Intl.DateTimeFormat('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
   const details = isCanSend
     ? {
-        uploadTime: formatter.format(new Date()),
+        uploadTime: new Date().toLocaleString(),
+        countAsset: countAsset!,
       }
     : {
         fileName: fileName!,
-        uploadTime: formatter.format(new Date()),
+        uploadTime: new Date().toLocaleString(),
         errorMessage: errorMessage!,
       }
   return {
@@ -160,11 +156,18 @@ function createEmailAlertMessage(
 export async function sendEmailAlertMessage(
   recipientEmail: string,
   isCanSend: boolean,
+  countAsset?: number,
   fileName?: string,
   errorMessage?: string,
 ) {
   const emailMessage = isCanSend
-    ? createEmailAlertMessage(recipientEmail, isCanSend)
-    : createEmailAlertMessage(recipientEmail, isCanSend, fileName, errorMessage)
+    ? createEmailAlertMessage(recipientEmail, isCanSend, countAsset)
+    : createEmailAlertMessage(
+        recipientEmail,
+        isCanSend,
+        0,
+        fileName,
+        errorMessage,
+      )
   await client.send(emailMessage)
 }

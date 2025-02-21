@@ -102,7 +102,7 @@ export async function deleteAssetById(assetId: string, orgId: string) {
       .delete(schemas.assetTable)
       .where(eq(schemas.assetTable.assetId, assetId))
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 }
 
