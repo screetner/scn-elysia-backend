@@ -23,6 +23,7 @@ export const python = (app: Elysia) =>
               sendEmail(body.recordedUserId, true),
             ])
           } catch (e) {
+            console.log(e)
             return error(500, e)
           }
         },
