@@ -19,11 +19,10 @@ export const python = (app: Elysia) =>
         async ({ error, body }) => {
           try {
             return await Promise.all([
-              postAsset(body),
-              sendEmail(body.recordedUserId, true),
+              await postAsset(body),
+              await sendEmail(body.recordedUserId, true),
             ])
           } catch (e) {
-            console.log(e)
             return error(500, e)
           }
         },

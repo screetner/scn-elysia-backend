@@ -40,6 +40,7 @@ export async function sendEmail(
 
   if (isCanSend) {
     result.slice(0, result.count).map(row => {
+      console.log(row.email)
       sendEmailAlertMessage(row.email as string, isCanSend)
     })
   } else {
