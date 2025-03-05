@@ -59,8 +59,19 @@ export async function countInvites(organizationId: string): Promise<dashboardMod
 }
 
 export async function countAdmins(organizationId: string): Promise<number> {
-    return db.select({})
-        .from(schemas.roleTable)
-        .where(and(eq(schemas.roleTable.organizationId, organizationId), eq(schemas.roleTable.roleName, ADMIN_ROLE)))
-        .then((res) => res.length);
+    const adminCount = await db
+        .select({ count: count(schemas.userTable.userId) })
+        .from(schemas.userTable)
+        .innerJoin(
+            schemas.roleTable,
+            eq(schemas.userTable.roleId, schemas.roleTable.roleId)
+        )
+        .where(
+            and(
+                eq(schemas.roleTable.roleName, 'Admin'),
+                eq(schemas.roleTable.organizationId, organizationId)
+            )
+        );
+
+    return adminCount[0].count;
 }
